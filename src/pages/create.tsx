@@ -16,6 +16,7 @@ import { parseUnits } from "viem";
 import PurchaseConfirmationPopup from "@/components/notifications/PurchaseConfirmationPopup";
 import Modal from "@/components/notifications/Modal";
 const rbtc = "./rbtc.png";
+import { UserRejectedRequestError } from 'viem';
 
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB image size limit
 
@@ -45,7 +46,7 @@ const CreateToken: React.FC = () => {
   const {
     createToken,
     isLoading: isBlockchainLoading,
-    UserRejectedRequestError,
+    // UserRejectedRequestError,
   } = useCreateToken();
 
   const uploadToIPFS = useCallback(async (file: File) => {
@@ -132,13 +133,15 @@ const CreateToken: React.FC = () => {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!tokenImageUrl) {
-        toast.error("Please upload an image before creating the token.");
-        return;
-      }
+      // if (!tokenImageUrl) {
+      //   toast.error("Please upload an image before creating the token.");
+      //   return;
+      // }
       setShowPurchasePopup(true);
     },
-    [tokenImageUrl]
+    [
+      // tokenImageUrl
+    ]
   );
 
   const handlePurchaseConfirm = useCallback(
@@ -210,13 +213,13 @@ const CreateToken: React.FC = () => {
     [
       tokenName,
       tokenSymbol,
-      tokenImageUrl,
-      tokenDescription,
-      website,
-      telegram,
-      discord,
-      twitter,
-      youtube,
+      // tokenImageUrl,
+      // tokenDescription,
+      // website,
+      // telegram,
+      // discord,
+      // twitter,
+      // youtube,
       createToken,
       router,
     ]
@@ -242,13 +245,16 @@ const CreateToken: React.FC = () => {
   }, [creationStep, isBlockchainLoading]);
 
   const isButtonDisabled =
-    creationStep !== "idle" || !tokenName || !tokenSymbol || !tokenImageUrl;
+    creationStep !== "idle" || !tokenName || !tokenSymbol 
+    // || !tokenImageUrl;
 
   const toggleSocialSection = () => setIsSocialExpanded(!isSocialExpanded);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (creationStep === "creating" || creationStep === "updating") {
+      if (creationStep === "creating" 
+        // || creationStep === "updating"
+      ) {
         e.preventDefault();
         e.returnValue = "";
       }
@@ -259,7 +265,9 @@ const CreateToken: React.FC = () => {
     };
   }, [creationStep]);
   useEffect(() => {
-    if (creationStep === "creating" || creationStep === "updating") {
+    if (creationStep === "creating" 
+      // || creationStep === "updating"
+    ) {
       setShowPreventNavigationModal(true);
     } else {
       setShowPreventNavigationModal(false);

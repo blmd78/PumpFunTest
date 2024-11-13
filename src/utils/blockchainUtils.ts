@@ -1,17 +1,35 @@
-import { formatUnits, parseUnits, maxUint256, decodeEventLog, Log, TransactionReceipt, UserRejectedRequestError } from 'viem';
-import { useReadContract, useWriteContract, useBalance, useWaitForTransactionReceipt, usePublicClient } from 'wagmi';
-import BondingCurveManagerABI from '@/abi/BondingCurveManager.json';
-import ERC20ABI from '@/abi/ERC20.json';
-import { useCallback } from 'react';
+import {
+  formatUnits,
+  parseUnits,
+  maxUint256,
+  decodeEventLog,
+  Log,
+  TransactionReceipt,
+  UserRejectedRequestError,
+} from "viem";
+import {
+  useReadContract,
+  useWriteContract,
+  useBalance,
+  useWaitForTransactionReceipt,
+  usePublicClient,
+} from "wagmi";
+import BondingCurveManagerABI from "@/abi/BondingCurveManager.json";
+import ERC20ABI from "@/abi/ERC20.json";
+import { useCallback } from "react";
+import ABI from "@/abi/abi.json";
 
-const BONDING_CURVE_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_BONDING_CURVE_MANAGER_ADDRESS as `0x${string}`;
-const CREATION_FEE = parseUnits('1', 18);
+const LINKEASER_ADDRESS = process.env
+  .NEXT_PUBLIC_LINKEASER_ADDRESS as `0x${string}`
+const BONDING_CURVE_MANAGER_ADDRESS = process.env
+  .NEXT_PUBLIC_BONDING_CURVE_MANAGER_ADDRESS as `0x${string}`;
+const CREATION_FEE = parseUnits("1", 18);
 
 export function useCurrentTokenPrice(tokenAddress: `0x${string}`) {
   const { data, refetch } = useReadContract({
     address: BONDING_CURVE_MANAGER_ADDRESS,
     abi: BondingCurveManagerABI,
-    functionName: 'getCurrentTokenPrice',
+    functionName: "getCurrentTokenPrice",
     args: [tokenAddress],
   });
   return { data: data as bigint | undefined, refetch };
@@ -21,7 +39,7 @@ export function useTotalSupply(tokenAddress: `0x${string}`) {
   return useReadContract({
     address: tokenAddress,
     abi: ERC20ABI,
-    functionName: 'totalSupply',
+    functionName: "totalSupply",
   });
 }
 
@@ -29,33 +47,42 @@ export function useTokenLiquidity(tokenAddress: `0x${string}`) {
   const { data, refetch } = useReadContract({
     address: BONDING_CURVE_MANAGER_ADDRESS,
     abi: BondingCurveManagerABI,
-    functionName: 'tokens',
+    functionName: "tokens",
     args: [tokenAddress],
   });
   return { data: data as [string, boolean, bigint] | undefined, refetch };
 }
 
-export function useCalcBuyReturn(tokenAddress: `0x${string}`, ethAmount: bigint) {
+export function useCalcBuyReturn(
+  tokenAddress: `0x${string}`,
+  ethAmount: bigint
+) {
   const { data, isLoading } = useReadContract({
     address: BONDING_CURVE_MANAGER_ADDRESS,
     abi: BondingCurveManagerABI,
-    functionName: 'calculateCurvedBuyReturn',
+    functionName: "calculateCurvedBuyReturn",
     args: [tokenAddress, ethAmount],
   });
   return { data: data as bigint | undefined, isLoading };
 }
 
-export function useCalcSellReturn(tokenAddress: `0x${string}`, tokenAmount: bigint) {
+export function useCalcSellReturn(
+  tokenAddress: `0x${string}`,
+  tokenAmount: bigint
+) {
   const { data, isLoading } = useReadContract({
     address: BONDING_CURVE_MANAGER_ADDRESS,
     abi: BondingCurveManagerABI,
-    functionName: 'calculateCurvedSellReturn',
+    functionName: "calculateCurvedSellReturn",
     args: [tokenAddress, tokenAmount],
   });
   return { data: data as bigint | undefined, isLoading };
 }
 
-export function useUserBalance(userAddress: `0x${string}`, tokenAddress: `0x${string}`) {
+export function useUserBalance(
+  userAddress: `0x${string}`,
+  tokenAddress: `0x${string}`
+) {
   const { data: ethBalance, refetch: refetchEthBalance } = useBalance({
     address: userAddress,
   });
@@ -77,55 +104,176 @@ export function useUserBalance(userAddress: `0x${string}`, tokenAddress: `0x${st
   };
 }
 
-export function useERC20Balance(tokenAddress: `0x${string}`, walletAddress: `0x${string}`) {
+export function useERC20Balance(
+  tokenAddress: `0x${string}`,
+  walletAddress: `0x${string}`
+) {
   const { data, refetch } = useReadContract({
     address: tokenAddress,
     abi: ERC20ABI,
-    functionName: 'balanceOf',
+    functionName: "balanceOf",
     args: [walletAddress],
   });
 
-  return { 
-    balance: data as bigint | undefined, 
-    refetch 
+  return {
+    balance: data as bigint | undefined,
+    refetch,
   };
 }
 
-export function useTokenAllowance(tokenAddress: `0x${string}`, owner: `0x${string}`, spender: `0x${string}`) {
+export function useTokenAllowance(
+  tokenAddress: `0x${string}`,
+  owner: `0x${string}`,
+  spender: `0x${string}`
+) {
   return useReadContract({
     address: tokenAddress,
     abi: ERC20ABI,
-    functionName: 'allowance',
+    functionName: "allowance",
     args: [owner, spender],
   }) as { data: bigint | undefined };
 }
 
+// export function useCreateToken() {
+//   const { writeContractAsync } = useWriteContract();
+//   const { data: transactionReceipt, isLoading, isSuccess, isError, error } = useWaitForTransactionReceipt();
+//   const publicClient = usePublicClient();
+
+//   const createToken = async (name: string, symbol: string, initialPurchaseAmount: bigint) => {
+//     if (!publicClient) {
+//       throw new Error('Public client is not available');
+//     }
+
+//     try {
+//       console.log('Initiating token creation transaction...');
+//       const totalValue = CREATION_FEE + initialPurchaseAmount;
+//       const hash = await writeContractAsync({
+//         address: BONDING_CURVE_MANAGER_ADDRESS,
+//         abi: BondingCurveManagerABI,
+//         functionName: 'create',
+//         args: [name, symbol],
+//         value: totalValue,
+//       });
+//       console.log('Token creation transaction sent. Hash:', hash);
+
+//       console.log('Waiting for transaction confirmation...');
+//       let receipt: TransactionReceipt | null = null;
+//       let attempts = 0;
+//       const maxAttempts = 30; // a maximum of 30 * 2 seconds
+
+//       while (!receipt && attempts < maxAttempts) {
+//         if (isSuccess && transactionReceipt) {
+//           receipt = transactionReceipt;
+//           break;
+//         }
+
+//         if (isError) {
+//           console.error('Transaction failed:', error?.message);
+//           throw new Error('Transaction failed: ' + error?.message);
+//         }
+
+//         // Manual check for transaction receipt
+//         try {
+//           receipt = await publicClient.getTransactionReceipt({ hash });
+//           if (receipt) break;
+//         } catch (e) {
+//           console.log('Error fetching receipt, will retry:', e);
+//         }
+
+//         await new Promise(resolve => setTimeout(resolve, 3000)); // Wait for 3 seconds
+//         attempts++;
+//         console.log(`Still waiting for confirmation... Attempt ${attempts}/${maxAttempts}`);
+//       }
+
+//       if (!receipt) {
+//         console.error('Transaction confirmation timeout');
+//         throw new Error('Transaction confirmation timeout');
+//       }
+
+//       console.log('Transaction confirmed. Receipt:', receipt);
+
+//       const tokenCreatedLog = receipt.logs.find(log =>
+//         log.address.toLowerCase() === BONDING_CURVE_MANAGER_ADDRESS.toLowerCase()
+//       ) as Log | undefined;
+
+//       if (tokenCreatedLog) {
+//         console.log('TokenCreated event found in logs');
+//         const decodedLog = decodeEventLog({
+//           abi: BondingCurveManagerABI,
+//           data: tokenCreatedLog.data,
+//           topics: tokenCreatedLog.topics,
+//         }) as unknown as { eventName: string; args: { tokenAddress: `0x${string}`; creator: `0x${string}`; name: string; symbol: string } };
+
+//         if (decodedLog.eventName === 'TokenCreated' && decodedLog.args) {
+//           console.log('Token created successfully. Address:', decodedLog.args.tokenAddress);
+//           return decodedLog.args.tokenAddress;
+//         }
+//       }
+
+//       console.error('TokenCreated event not found in transaction logs');
+//       throw new Error('TokenCreated event not found in transaction logs');
+//     } catch (error) {
+
+//       console.error('Error in createToken function:', error);
+//       if (error instanceof UserRejectedRequestError) {
+//         throw error;
+//       }
+
+//       throw error;
+//     }
+//   };
+
+//   return { createToken, isLoading: isLoading || isSuccess === false , UserRejectedRequestError};
+// }
+
 export function useCreateToken() {
   const { writeContractAsync } = useWriteContract();
-  const { data: transactionReceipt, isLoading, isSuccess, isError, error } = useWaitForTransactionReceipt();
-  const publicClient = usePublicClient();
 
-  const createToken = async (name: string, symbol: string, initialPurchaseAmount: bigint) => {
+  const {
+    data: transactionReceipt,
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useWaitForTransactionReceipt();
+  const publicClient = usePublicClient();
+  const createToken = async (
+    name: string,
+    symbol: string,
+    initialPurchaseAmount: bigint
+  ) => {
     if (!publicClient) {
-      throw new Error('Public client is not available');
+      throw new Error("Public client is not available");
     }
 
     try {
-      console.log('Initiating token creation transaction...');
-      const totalValue = CREATION_FEE + initialPurchaseAmount;
+      console.log("Initiating token creation transaction...");
+      console.log(
+        "name",
+        name,
+        "symbol",
+        symbol,
+        "initialPurchaseAmount",
+        initialPurchaseAmount
+      );
+      // const totalValue = CREATION_FEE + initialPurchaseAmount;
+      const totalValue = CREATION_FEE;
+      console.log("Total value for transaction:", totalValue.toString());
+      console.log(totalValue);
       const hash = await writeContractAsync({
-        address: BONDING_CURVE_MANAGER_ADDRESS,
-        abi: BondingCurveManagerABI,
-        functionName: 'create',
+        address: LINKEASER_ADDRESS,
+        abi: ABI,
+        functionName: "createToken",
         args: [name, symbol],
         value: totalValue,
       });
-      console.log('Token creation transaction sent. Hash:', hash);
 
-      console.log('Waiting for transaction confirmation...');
+      console.log("Token creation transaction sent. Hash:", hash);
+
+      console.log("Waiting for transaction confirmation...");
       let receipt: TransactionReceipt | null = null;
       let attempts = 0;
-      const maxAttempts = 30; // a maximum of 30 * 2 seconds
+      const maxAttempts = 30; // a maximum of 30 * 3 seconds = 90 seconds
 
       while (!receipt && attempts < maxAttempts) {
         if (isSuccess && transactionReceipt) {
@@ -134,8 +282,8 @@ export function useCreateToken() {
         }
 
         if (isError) {
-          console.error('Transaction failed:', error?.message);
-          throw new Error('Transaction failed: ' + error?.message);
+          console.error("Transaction failed:", error?.message);
+          throw new Error("Transaction failed: " + error?.message);
         }
 
         // Manual check for transaction receipt
@@ -143,44 +291,56 @@ export function useCreateToken() {
           receipt = await publicClient.getTransactionReceipt({ hash });
           if (receipt) break;
         } catch (e) {
-          console.log('Error fetching receipt, will retry:', e);
+          console.log("Error fetching receipt, will retry:", e);
         }
 
-        await new Promise(resolve => setTimeout(resolve, 3000)); // Wait for 3 seconds
+        await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait for 3 seconds
         attempts++;
-        console.log(`Still waiting for confirmation... Attempt ${attempts}/${maxAttempts}`);
+        console.log(
+          `Still waiting for confirmation... Attempt ${attempts}/${maxAttempts}`
+        );
       }
 
       if (!receipt) {
-        console.error('Transaction confirmation timeout');
-        throw new Error('Transaction confirmation timeout');
+        console.error("Transaction confirmation timeout");
+        throw new Error("Transaction confirmation timeout");
       }
 
-      console.log('Transaction confirmed. Receipt:', receipt);
+      console.log("Transaction confirmed. Receipt:", receipt);
 
-      const tokenCreatedLog = receipt.logs.find(log => 
-        log.address.toLowerCase() === BONDING_CURVE_MANAGER_ADDRESS.toLowerCase()
+      const tokenCreatedLog = receipt.logs.find(
+        (log) => log.address.toLowerCase() === LINKEASER_ADDRESS.toLowerCase()
       ) as Log | undefined;
 
       if (tokenCreatedLog) {
-        console.log('TokenCreated event found in logs');
+        console.log("TokenCreated event found in logs");
         const decodedLog = decodeEventLog({
           abi: BondingCurveManagerABI,
           data: tokenCreatedLog.data,
           topics: tokenCreatedLog.topics,
-        }) as unknown as { eventName: string; args: { tokenAddress: `0x${string}`; creator: `0x${string}`; name: string; symbol: string } };
+        }) as unknown as {
+          eventName: string;
+          args: {
+            tokenAddress: `0x${string}`;
+            creator: `0x${string}`;
+            name: string;
+            symbol: string;
+          };
+        };
 
-        if (decodedLog.eventName === 'TokenCreated' && decodedLog.args) {
-          console.log('Token created successfully. Address:', decodedLog.args.tokenAddress);
+        if (decodedLog.eventName === "TokenCreated" && decodedLog.args) {
+          console.log(
+            "Token created successfully. Address:",
+            decodedLog.args.tokenAddress
+          );
           return decodedLog.args.tokenAddress;
         }
       }
 
-      console.error('TokenCreated event not found in transaction logs');
-      throw new Error('TokenCreated event not found in transaction logs');
-    } catch (error) {
-      
-      console.error('Error in createToken function:', error);
+      console.error("TokenCreated event not found in transaction logs");
+      throw new Error("TokenCreated event not found in transaction logs");
+    } catch (error: any) {
+      console.error("Error in createToken function:", error);
       if (error instanceof UserRejectedRequestError) {
         throw error;
       }
@@ -189,7 +349,7 @@ export function useCreateToken() {
     }
   };
 
-  return { createToken, isLoading: isLoading || isSuccess === false , UserRejectedRequestError};
+  return { createToken, isLoading: isLoading || !isSuccess, isError, error };
 }
 
 export function useBuyTokens() {
@@ -200,13 +360,13 @@ export function useBuyTokens() {
       const result = await writeContractAsync({
         address: BONDING_CURVE_MANAGER_ADDRESS,
         abi: BondingCurveManagerABI,
-        functionName: 'buy',
+        functionName: "buy",
         args: [tokenAddress],
         value: ethAmount,
       });
       return result;
     } catch (error) {
-      console.error('Buy tokens error:', error);
+      console.error("Buy tokens error:", error);
       throw error;
     }
   };
@@ -222,12 +382,12 @@ export function useSellTokens() {
       const result = await writeContractAsync({
         address: BONDING_CURVE_MANAGER_ADDRESS,
         abi: BondingCurveManagerABI,
-        functionName: 'sell',
+        functionName: "sell",
         args: [tokenAddress, amount],
       });
       return result;
     } catch (error) {
-      console.error('Sell tokens error:', error);
+      console.error("Sell tokens error:", error);
       throw error;
     }
   };
@@ -243,12 +403,12 @@ export function useApproveTokens() {
       const result = await writeContractAsync({
         address: tokenAddress,
         abi: ERC20ABI,
-        functionName: 'approve',
+        functionName: "approve",
         args: [BONDING_CURVE_MANAGER_ADDRESS, maxUint256],
       });
       return result;
     } catch (error) {
-      console.error('Approve tokens error:', error);
+      console.error("Approve tokens error:", error);
       throw error;
     }
   };
@@ -258,7 +418,7 @@ export function useApproveTokens() {
 
 export const formatAmountV3 = (amount: string, decimals: number = 18) => {
   const formattedAmount = parseFloat(formatUnits(BigInt(amount), decimals));
-  
+
   const format = (value: number, maxDecimals: number) => {
     const rounded = value.toFixed(maxDecimals);
     const withoutTrailingZeros = parseFloat(rounded).toString();
@@ -276,7 +436,10 @@ export const formatAmountV3 = (amount: string, decimals: number = 18) => {
   } else if (formattedAmount >= 1) {
     return format(formattedAmount, 2);
   } else {
-    const decimals = Math.min(6, Math.max(2, 3 - Math.floor(Math.log10(formattedAmount))));
+    const decimals = Math.min(
+      6,
+      Math.max(2, 3 - Math.floor(Math.log10(formattedAmount)))
+    );
     return format(formattedAmount, decimals);
   }
 };
@@ -287,8 +450,10 @@ export function formatTimestamp(timestamp: string): string {
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  if (diffInSeconds < 3600)
+    return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+  if (diffInSeconds < 86400)
+    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
   return `${Math.floor(diffInSeconds / 86400)} days ago`;
 }
 
@@ -332,4 +497,13 @@ export function shortenAddress(address: string): string {
 
 export function getExplorerUrl(txHash: string): string {
   return `https://shibariumscan.io/tx/${txHash}`;
+}
+
+export function useGetAllTokens() {
+  const { data, refetch } = useReadContract({
+    address: LINKEASER_ADDRESS,
+    abi: ABI,
+    functionName: "getAllTokens",
+  });
+  return { data: data as bigint | undefined, refetch };
 }

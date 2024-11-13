@@ -14,9 +14,28 @@ import { WebSocketProvider } from '@/components/providers/WebSocketProvider';
 const config = getDefaultConfig({
   appName: "Pump Fun",
   projectId: "YOUR_PROJECT_ID",
-  chains: [shibarium],
-  ssr: true,
-});
+  chains: [
+    {
+      id: 5003,
+      name: "Mantle",
+      network: "mantle",
+      rpcUrls: {
+        default: { http: ["https://rpc.sepolia.mantle.xyz/"] },
+      },
+      blockExplorers: {
+        default: {
+          name: "Mantle Testnet Explorer",
+          url: "https://explorer.testnet.mantle.xyz",
+        },
+      },
+      nativeCurrency: {
+        name: "Mantle",
+        symbol: "MNT",
+        decimals: 18,
+      },
+    },
+  ]
+})
 
 
 const queryClient = new QueryClient()

@@ -19,6 +19,7 @@ import SEO from "@/components/seo/SEO";
 import { useWebSocket } from "@/components/providers/WebSocketProvider";
 import { Switch } from "@/components/ui/switch";
 import Spinner from "@/components/ui/Spinner";
+import { useGetAllTokens } from "@/utils/blockchainUtils";
 const monark = "/monark.png";
 
 const TOKENS_PER_PAGE = 10;
@@ -38,6 +39,8 @@ const Home: React.FC = () => {
   const [displayedNewTokens, setDisplayedNewTokens] = useState<Token[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { newTokens } = useWebSocket();
+  const {data} = useGetAllTokens()
+  console.log(data)
 
   useEffect(() => {
     // console.log(
@@ -103,49 +106,49 @@ const Home: React.FC = () => {
       } else {
         switch (sort) {
           case "all":
-            fetchedTokens = await getAllTokens(currentPage, TOKENS_PER_PAGE);
+            fetchedTokens = data
             break;
-          case "recentCreated":
-            fetchedTokens = await getRecentTokens(
-              currentPage,
-              TOKENS_PER_PAGE,
-              1
-            );
-            if (fetchedTokens === null) {
-              setNoRecentTokens(true);
-              fetchedTokens = {
-                data: [],
-                totalCount: 0,
-                currentPage: 1,
-                totalPages: 1,
-              };
-            }
-            break;
-          case "ended":
-            try {
-              fetchedTokens = await getTokensWithLiquidity(
-                currentPage,
-                TOKENS_PER_PAGE
-              );
-            } catch (liquidityError) {
-              if (
-                liquidityError instanceof Error &&
-                "response" in liquidityError &&
-                (liquidityError.response as any).status === 404
-              ) {
-                setNoLiquidityTokens(true);
-                fetchedTokens = {
-                  data: [],
-                  totalCount: 0,
-                  currentPage: 1,
-                  totalPages: 1,
-                };
-              } else {
-                throw liquidityError;
-              }
-            }
-            break;
-          case "bomper":
+          // case "recentCreated":
+          //   fetchedTokens = await getRecentTokens(
+          //     currentPage,
+          //     TOKENS_PER_PAGE,
+          //     1
+          //   );
+          //   if (fetchedTokens === null) {
+          //     setNoRecentTokens(true);
+          //     fetchedTokens = {
+          //       data: [],
+          //       totalCount: 0,
+          //       currentPage: 1,
+          //       totalPages: 1,
+          //     };
+          //   }
+          //   break;
+          // case "ended":
+          //   try {
+          //     fetchedTokens = await getTokensWithLiquidity(
+          //       currentPage,
+          //       TOKENS_PER_PAGE
+          //     );
+          //   } catch (liquidityError) {
+          //     if (
+          //       liquidityError instanceof Error &&
+          //       "response" in liquidityError &&
+          //       (liquidityError.response as any).status === 404
+          //     ) {
+          //       setNoLiquidityTokens(true);
+          //       fetchedTokens = {
+          //         data: [],
+          //         totalCount: 0,
+          //         currentPage: 1,
+          //         totalPages: 1,
+          //       };
+          //     } else {
+          //       throw liquidityError;
+          //     }
+          //   }
+          //   break;
+          // case "bomper":
             fetchedTokens = {
               data: [],
               totalCount: 0,
@@ -154,11 +157,12 @@ const Home: React.FC = () => {
             };
             break;
           default:
-            fetchedTokens = await getAllTokens(currentPage, TOKENS_PER_PAGE);
+            fetchedTokens = data
         }
+        console.log('Fetched tokens:', fetchedTokens);
       }
 
-      // console.log('Fetched tokens:', fetchedTokens);
+     
 
       const adjustedTokens: PaginatedResponse<
         Token | TokenWithLiquidityEvents
