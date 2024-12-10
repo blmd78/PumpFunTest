@@ -7,11 +7,79 @@ import { ethers } from 'ethers';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export async function getAllTokens(page: number = 1, pageSize: number = 20): Promise<PaginatedResponse<Token>> {
-  const response = await axios.get(`${API_BASE_URL}/api/tokens`, {
-    params: { page, pageSize }
-  });
-  return response.data;
+export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedResponse<Token>> {
+  const skip = (page - 1) * pageSize;
+
+  const query = `
+    query GetAllTokens($first: Int, $skip: Int) {
+      tokenCreateds(first: $first, skip: $skip) {
+        id
+        tokenAddress
+        name
+        symbol
+        poolAddress
+        blockNumber
+        blockTimestamp
+        transactionHash
+      }
+    }
+  `;
+
+  const variables = {
+    first: pageSize,
+    skip: skip
+  };
+
+  try {
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: query,
+        variables: variables
+      }),
+    });
+
+    const result = await response.json();
+    console.log(result);
+    if (result.errors) {
+      console.error('GraphQL errors:', result.errors);
+      return {
+        data: [],
+        totalCount: 0,
+        currentPage: page,
+        totalPages: 0,
+        tokens: []
+      };
+    }
+
+    const tokens = result.data.tokenCreateds.map((token: any) => ({
+      id: token.id,
+      address: token.tokenAddress,
+      name: token.name,
+      symbol: token.symbol,
+      // Add other fields as needed
+    }));
+
+    return {
+      data: tokens,
+      totalCount: tokens.length, // Adjust this if you have a way to get the total count
+      currentPage: page,
+      totalPages: Math.ceil(tokens.length / pageSize), // Adjust this if you have a way to get the total pages
+      tokens: [] // This field seems redundant based on your interface
+    };
+  } catch (error) {
+    console.error('Error fetching tokens:', error);
+    return {
+      data: [],
+      totalCount: 0,
+      currentPage: page,
+      totalPages: 0,
+      tokens: []
+    };
+  }
 }
 
 
