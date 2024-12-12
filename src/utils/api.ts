@@ -138,10 +138,117 @@ export async function getTokenInfoAndTransactions(
   transactionPage: number = 1,
   transactionPageSize: number = 10
 ): Promise<TokenWithTransactions> {
-  const response = await axios.get(`${API_BASE_URL}/api/tokens/address/${address}/info-and-transactions`, {
-    params: { transactionPage, transactionPageSize }
-  });
-  return response.data;
+  console.log("address",address);
+  const skip = (transactionPage - 1) * transactionPageSize;
+
+  const query = `
+    query GetTokenInfoAndTransactions($address: String!, $first: Int!, $skip: Int!) {
+      tokenCreated: tokenCreateds(where: { tokenAddress: $address }) {
+        id
+        tokenAddress
+        name
+        symbol
+        poolAddress
+        blockNumber
+        blockTimestamp
+        transactionHash
+      }
+      transactions: transactions(
+        first: $first
+        skip: $skip
+        where: { tokenAddress: $address }
+        orderBy: timestamp
+        orderDirection: desc
+      ) {
+        id
+        type
+        senderAddress
+        recipientAddress
+        ethAmount
+        tokenAmount
+        tokenPrice
+        txHash
+        timestamp
+        poolAddress
+        tokenAddress
+        tax
+      }
+    }
+  `;
+
+  const variables = {
+    address: address.toLowerCase(),
+    first: transactionPageSize,
+    skip: skip
+  };
+
+  try {
+    console.log("query",query);
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      }),
+    });
+
+    const result = await response.json();
+    console.log("getTokenInfoAndTransactions",result);
+    if (result.errors) {
+      throw new Error('Failed to fetch token info');
+    }
+
+    const tokenData = result.data.tokenCreated[0];
+    const transactions = result.data.transactions;
+
+    return {
+      id: tokenData.id,
+      address: tokenData.tokenAddress,
+      name: tokenData.name,
+      symbol: tokenData.symbol,
+      creatorAddress: '', // This might need to come from a different query
+      logo: '', // This would come from your MongoDB metadata
+      description: '', // This would come from your MongoDB metadata
+      createdAt: new Date(parseInt(tokenData.blockTimestamp) * 1000).toISOString(),
+      updatedAt: new Date(parseInt(tokenData.blockTimestamp) * 1000).toISOString(),
+      _count: {
+        liquidityEvents: 0
+      },
+      youtube: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      discord: "https://discord.gg/likeaser ",
+      twitter: "https://twitter.com/likeaser",
+      website: "https://likeaser.io",
+      telegram: "https://t.me/likeaser",
+      transactions: {
+        data: transactions.map((tx: any) => ({
+          id: tx.id,
+          type: tx.type,
+          senderAddress: tx.senderAddress,
+          recipientAddress: tx.recipientAddress,
+          ethAmount: tx.ethAmount,
+          tokenAmount: tx.tokenAmount,
+          tokenPrice: tx.tokenPrice,
+          txHash: tx.txHash,
+          timestamp: new Date(parseInt(tx.timestamp) * 1000).toISOString(),
+          poolAddress: tx.poolAddress,
+          tokenAddress: tx.tokenAddress,
+          tax: tx.tax
+        })),
+        pagination: {
+          currentPage: transactionPage,
+          pageSize: transactionPageSize,
+          totalCount: transactions.length,
+          totalPages: Math.ceil(transactions.length / transactionPageSize)
+        }
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching token info:', error);
+    throw error;
+  }
 }
 
 
