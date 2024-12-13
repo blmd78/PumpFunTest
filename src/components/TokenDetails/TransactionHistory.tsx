@@ -26,23 +26,24 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
 
   return (
     <div className="mb-8">
+            <h2 className="text-sm sm:text-base font-semibold mb-4 text-white">Trades</h2>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-xs">
           <thead className="hidden sm:table-header-group">
-            <tr className="bg-gray-700">
-              <th className="p-2 text-left text-gray-300">Maker</th>
-              <th className="p-2 text-left text-gray-300">Type</th>
-              <th className="p-2 text-left text-gray-300">BONE</th>
-              <th className="p-2 text-left text-gray-300">{tokenSymbol}</th>
-              <th className="p-2 text-left text-gray-300">Date</th>
-              <th className="p-2 text-left text-gray-300">Tx</th>
+            <tr className="bg-[#3F3F5D]">
+              <th className="p-2 text-left text-[#B3AEAE]">Maker</th>
+              <th className="p-2 text-left text-[#B3AEAE]">Type</th>
+              <th className="p-2 text-left text-[#B3AEAE]">BONE</th>
+              <th className="p-2 text-left text-[#B3AEAE]">{tokenSymbol}</th>
+              <th className="p-2 text-left text-[#B3AEAE]">Date</th>
+              <th className="p-2 text-left text-[#B3AEAE]">Tx</th>
             </tr>
           </thead>
           <tbody>
             {transactions.map((tx) => (
               <React.Fragment key={tx.id}>
                 <tr 
-                  className="border-b border-gray-700 cursor-pointer sm:cursor-default"
+                  className="border-b border-[#3F3F5D] cursor-pointer sm:cursor-default"
                   onClick={() => toggleRow(tx.id)}
                 >
                   <td className="p-2 text-blue-400 hidden sm:table-cell">{shortenAddress(tx.senderAddress)}</td>
@@ -90,7 +91,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
           <button
             onClick={() => handlePageChange(transactionPage - 1)}
             disabled={transactionPage === 1}
-            className="p-1 rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            className="p-1 rounded-md bg-gray-800 text-gray-400 hover:bg-[#3F3F5D] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
             <ChevronLeftIcon size={16} />
           </button>
@@ -109,7 +110,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
                     className={`px-2 py-1 text-xs rounded-md transition-colors duration-200 ${
                       transactionPage === page
                         ? 'bg-blue-600 text-white'
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                        : 'bg-gray-800 text-gray-400 hover:bg-[#3F3F5D]'
                     }`}
                   >
                     {page}
@@ -131,7 +132,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
           <button
             onClick={() => handlePageChange(transactionPage + 1)}
             disabled={transactionPage === totalTransactionPages}
-            className="p-1 rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            className="p-1 rounded-md bg-gray-800 text-gray-400 hover:bg-[#3F3F5D] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
             <ChevronRightIcon size={16} />
           </button>

@@ -137,7 +137,7 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center space-x-3">
           <Link
               href={address ? `/profile/${address}` : '#'} 
-              className="text-gray-300 hover:text-white px-2 py-1 rounded-md text-xs"
+              className="text-[#B3AEAE] hover:text-white px-2 py-1 rounded-md text-xs"
               onClick={handleProfileClick}
             >
               Profile
@@ -164,12 +164,12 @@ const Navbar: React.FC = () => {
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link href="/create" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            <Link href="/create" className="text-[#B3AEAE] hover:text-white block px-3 py-2 rounded-md text-base font-medium">
               Create Token
             </Link>
             <Link 
               href={address ? `/profile/${address}` : '#'}
-              className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+              className="text-[#B3AEAE] hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               onClick={handleProfileClick}
             >
               Profile

@@ -35,7 +35,7 @@ const HowItWorksPopup: React.FC = () => {
         </button>
         <div className="p-4 sm:p-5">
           <h2 className="text-base sm:text-lg font-bold text-[#F7931A] mb-2 text-center">How It Works</h2>
-          <p className="text-gray-300 mb-4 text-center text-[10px] sm:text-xs">
+          <p className="text-[#B3AEAE] mb-4 text-center text-[10px] sm:text-xs">
             Bondle ensures safe, fair-launch tokens with no presale or team allocation.
           </p>
           <div className="space-y-3">
@@ -44,7 +44,7 @@ const HowItWorksPopup: React.FC = () => {
                 <div className="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
                   <step.icon className="w-3 h-3 text-white" />
                 </div>
-                <p className="text-gray-300 text-[10px] sm:text-xs flex-grow">{step.text}</p>
+                <p className="text-[#B3AEAE] text-[10px] sm:text-xs flex-grow">{step.text}</p>
               </div>
             ))}
           </div>

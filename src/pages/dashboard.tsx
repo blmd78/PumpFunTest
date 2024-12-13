@@ -36,7 +36,7 @@ const TokenBalanceItem: React.FC<{
       onClick={onClick}
     >
       <h3 className="text-xs sm:text-sm font-semibold text-blue-400 mb-2">{symbol}</h3>
-      <p className="text-gray-300 text-[10px] sm:text-xs">Balance: {formatAmountV3(balance.toString())}</p>
+      <p className="text-[#B3AEAE] text-[10px] sm:text-xs">Balance: {formatAmountV3(balance.toString())}</p>
       <p className="text-gray-400 text-[10px] sm:text-xs mt-2">
         Address: 
         <span 
@@ -232,7 +232,7 @@ const UserDashboard: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-300 text-center text-sm sm:text-base">Don&apos;t own any tokens yet</p>
+                <p className="text-[#B3AEAE] text-center text-sm sm:text-base">Don&apos;t own any tokens yet</p>
               )}
             </div>
           )}
@@ -240,7 +240,7 @@ const UserDashboard: React.FC = () => {
           {activeTab === 'created' && (
             <div>
               {isLoading ? (
-                <p className="text-gray-300 text-center">Loading created tokens...</p>
+                <p className="text-[#B3AEAE] text-center">Loading created tokens...</p>
               ) : createdTokens.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {createdTokens.map((token) => (
@@ -262,7 +262,7 @@ const UserDashboard: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-300 text-center text-sm sm:text-base">No tokens created yet</p>
+                <p className="text-[#B3AEAE] text-center text-sm sm:text-base">No tokens created yet</p>
               )}
               {createdTokensTotalPages > 1 && (
                 <Pagination
@@ -278,34 +278,34 @@ const UserDashboard: React.FC = () => {
         <div>
           <h2 className="text-lg sm:text-xl font-semibold text-blue-400 mb-4">Recent Transactions</h2>
           {isLoading ? (
-            <p className="text-gray-300">Loading transactions...</p>
+            <p className="text-[#B3AEAE]">Loading transactions...</p>
           ) : transactions && transactions.length > 0 ? (
             <div className="overflow-x-auto bg-gray-800 rounded-lg shadow-md">
               <table className="min-w-full divide-y divide-gray-700">
                 <thead className="bg-gray-900">
                   <tr>
-                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th>
-                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Token</th>
-                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Amount</th>
-                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Bone</th>
-                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Date</th>
+                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-[#B3AEAE] uppercase tracking-wider">Type</th>
+                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-[#B3AEAE] uppercase tracking-wider">Token</th>
+                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-[#B3AEAE] uppercase tracking-wider">Amount</th>
+                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-[#B3AEAE] uppercase tracking-wider">Bone</th>
+                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-[#B3AEAE] uppercase tracking-wider">Date</th>
                   </tr>
                 </thead>
                 <tbody className="bg-gray-800 divide-y divide-gray-700">
                   {transactions.map((tx) => (
                     <tr key={tx.id} className="hover:bg-gray-700 transition-colors duration-150">
-                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{tx.type}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{getTokenSymbol(tx.recipientAddress)}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{formatAmountV3(tx.tokenAmount)}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{formatAmountV3(tx.ethAmount)} BONE</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{formatTimestamp(tx.timestamp)}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-[#B3AEAE]">{tx.type}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-[#B3AEAE]">{getTokenSymbol(tx.recipientAddress)}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-[#B3AEAE]">{formatAmountV3(tx.tokenAmount)}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-[#B3AEAE]">{formatAmountV3(tx.ethAmount)} BONE</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-[#B3AEAE]">{formatTimestamp(tx.timestamp)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className="text-gray-300 bg-gray-800 rounded-lg p-4 shadow-md">No recent transactions.</p>
+            <p className="text-[#B3AEAE] bg-gray-800 rounded-lg p-4 shadow-md">No recent transactions.</p>
           )}
           
           {totalPages > 1 && (

@@ -127,7 +127,7 @@ const Chats: React.FC<ChatsProps> = ({ tokenAddress, tokenInfo }) => {
           />
           <div className="flex-grow min-w-0">
             <div className="flex justify-between items-center flex-wrap gap-1">
-              <span className="text-gray-300 text-[10px] font-semibold">
+              <span className="text-[#B3AEAE] text-[10px] font-semibold">
                 {shortenAddress(msg.user)}
                 {isCreator && <span className="ml-1 text-blue-400">(dev)</span>}
               </span>

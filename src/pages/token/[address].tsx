@@ -60,7 +60,7 @@ interface TokenDetailProps {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [transactionPage, setTransactionPage] = useState(1);
   const [totalTransactionPages, setTotalTransactionPages] = useState(1);
-  const [fromToken, setFromToken] = useState({ symbol: 'BONE', amount: '' });
+  const [fromToken, setFromToken] = useState({ symbol: 'RBTC', amount: '' });
   const [toToken, setToToken] = useState({ symbol: '', amount: '' });
   const [isSwapped, setIsSwapped] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -247,11 +247,11 @@ interface TokenDetailProps {
   const handleSwap = useCallback(() => {
     setIsSwapped((prev) => !prev);
     setFromToken((prev) => ({
-      symbol: prev.symbol === 'BONE' ? tokenInfo.symbol : 'BONE',
+      symbol: prev.symbol === 'RBTC' ? tokenInfo.symbol : 'RBTC',
       amount: '',
     }));
     setToToken((prev) => ({
-      symbol: prev.symbol === 'BONE' ? tokenInfo.symbol : 'BONE',
+      symbol: prev.symbol === 'RBTC' ? tokenInfo.symbol : 'RBTC',
       amount: '',
     }));
   }, [tokenInfo]);
@@ -334,29 +334,30 @@ interface TokenDetailProps {
           logo: tokenInfo.logo
         }}
       />
-      <div className="w-full min-h-screen bg-gray-900 text-white overflow-x-hidden">
+      {/* <div className="w-full min-h-screen bg-gray-900 text-white overflow-x-hidden"> */}
+       <div className="w-full min-h-screen bg-[#1B1B28] text-white overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row items-center mb-6 gap-4">
             <Image src={tokenInfo.logo} alt={tokenInfo.name} width={64} height={64} className="rounded-full" />
             <div className="text-center sm:text-left">
-              <h1 className="text-2xl sm:text-3xl font-bold text-blue-400">{tokenInfo.name}</h1>
-              <p className="text-sm text-gray-300">{tokenInfo.symbol}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">{tokenInfo.name}</h1>
+              <p className="text-sm text-[#B3AEAE]">{tokenInfo.symbol}</p>
             </div>
           </div>
 
       {/* Price and Liquidity Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xs sm:text-sm font-semibold mb-2 text-blue-300">Current Price</h2>
-          <p className="text-[10px] sm:text-xs text-blue-400">
-            {currentPrice ? formatAmount(currentPrice.toString()) : 'Loading...'} BONE
+        <div className="bg-[#3F3F5D] p-4 rounded-lg">
+          <h2 className="text-xs sm:text-sm font-semibold mb-2 text-white">Current Price</h2>
+          <p className="text-[10px] sm:text-xs text-[#F7931A]">
+            {currentPrice ? formatAmount(currentPrice.toString()) : 'Loading...'} RBTC
           </p>
         </div>
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xs sm:text-sm font-semibold mb-2 text-blue-300">Current Liquidity</h2>
-          <p className="text-[10px] sm:text-xs text-blue-400 mb-2">
-            {liquidityData && liquidityData[2] ? `${formatAmountV2(liquidityData[2].toString())} BONE` : '0 BONE'}
+        <div className="bg-[#3F3F5D] p-4 rounded-lg">
+          <h2 className="text-xs sm:text-sm font-semibold mb-2 text-white">Current Liquidity</h2>
+          <p className="text-[10px] sm:text-xs text-[#B3AEAE] mb-2">
+            {liquidityData && liquidityData[2] ? `${formatAmountV2(liquidityData[2].toString())} RBTC` : '0 RBTC'}
           </p>
           {liquidityData && liquidityData[2] && (
             <>
@@ -382,8 +383,8 @@ interface TokenDetailProps {
 
           {/* Price Chart Section */}
           <div className="mb-8">
-            <h2 className="text-sm sm:text-base font-semibold mb-4 text-blue-300">Price Chart (USD)</h2>
-            <div className="bg-gray-800 p-2 sm:p-4 rounded-lg shadow">
+            <h2 className="text-sm sm:text-base font-semibold mb-4 text-white">Price Chart (USD)</h2>
+            <div className="bg-[#3F3F5D] p-2 sm:p-4 rounded-lg shadow">
             <TradingViewChart 
                 data={chartData} 
                 liquidityEvents={liquidityEvents} 
@@ -393,17 +394,17 @@ interface TokenDetailProps {
           </div>
 
           {/* Quick Actions Section */}
-          <div className="bg-gray-800 p-4 sm:p-6 rounded-lg mb-8">
-            <h2 className="text-sm sm:text-base font-semibold mb-4 text-blue-300">Quick Actions</h2>
-            <div className="bg-gray-700 p-4 rounded-lg">
+          <div className="bg-[#3F3F5D] p-4 sm:p-6 rounded-lg mb-8">
+            <h2 className="text-sm sm:text-base font-semibold mb-4 text-white">Quick Actions</h2>
+            <div className="bg-[#3F3F5D] p-4 rounded-lg">
               <div className="mb-4 relative">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
-                  <label className="text-xs sm:text-sm text-gray-300 mb-1 sm:mb-0">From</label>
+                  <label className="text-xs sm:text-sm text-[#B3AEAE] mb-1 sm:mb-0">From</label>
                   <span className="text-[10px] sm:text-sm text-gray-400">
                     Balance: {isSwapped ? tokenBalance : ethBalance} {fromToken.symbol}
                   </span>
                 </div>
-                <div className="flex items-center bg-gray-600 rounded p-2">
+                <div className="flex items-center bg-[#3F3F5D] border border-white rounded p-2">
                   <input
                     type="number"
                     value={fromToken.amount}
@@ -412,20 +413,20 @@ interface TokenDetailProps {
                     placeholder="0.00"
                     disabled={isTransacting}
                   />
-                  <span className="ml-2 text-[10px] sm:text-sm text-gray-300 whitespace-nowrap">{fromToken.symbol}</span>
+                  <span className="ml-2 text-[10px] sm:text-sm text-[#B3AEAE] whitespace-nowrap">{fromToken.symbol}</span>
                 </div>
               </div>
-              <button onClick={handleSwap} className="w-full flex justify-center py-2 text-gray-400 hover:text-blue-400 mb-4">
+              <button onClick={handleSwap} className="w-full flex justify-center py-2 text-gray-400 hover:text-[#F7931A] mb-4">
                 <ArrowUpDownIcon size={20} />
               </button>
               <div className="mb-4 relative">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
-                  <label className="text-xs sm:text-sm text-gray-300 mb-1 sm:mb-0">To (Estimated)</label>
+                  <label className="text-xs sm:text-sm text-[#B3AEAE] mb-1 sm:mb-0">To (Estimated)</label>
                   <span className="text-[10px] sm:text-sm text-gray-400">
                     Balance: {isSwapped ? ethBalance : tokenBalance} {toToken.symbol}
                   </span>
                 </div>
-                <div className="flex items-center bg-gray-600 rounded p-2">
+                <div className="flex items-center bg-[#3F3F5D] border border-white rounded p-2">
                   <input
                     type="text"
                     value={isCalculating ? 'Calculating...' : toToken.amount ? parseFloat(toToken.amount).toFixed(5) : ''}
@@ -433,12 +434,12 @@ interface TokenDetailProps {
                     className="w-full bg-transparent text-white outline-none text-[10px] sm:text-sm"
                     placeholder="0.00"
                   />
-                  <span className="ml-2 text-xs sm:text-sm text-gray-300 whitespace-nowrap">{toToken.symbol}</span>
+                  <span className="ml-2 text-xs sm:text-sm text-[#B3AEAE] whitespace-nowrap">{toToken.symbol}</span>
                 </div>
               </div>
               <button
                 onClick={handleAction}
-                className="w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600 transition-colors disabled:opacity-50 text-sm sm:text-base"
+                className="w-full bg-[#5252FF] border border-white text-white py-3 rounded hover:bg-blue-600 transition-colors disabled:opacity-50 text-sm sm:text-base"
                 disabled={!fromToken.amount || isCalculating || isTransacting}
               >
                 {isTransacting ? 'Processing...' : actionButtonText} {isSwapped ? '' : tokenInfo.symbol}
@@ -448,7 +449,7 @@ interface TokenDetailProps {
 
           {/* Trades and Chats Section */}
           <div className="mb-8">
-            <Tab.Group>
+            {/* <Tab.Group>
               <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
                 <Tab
                   className={({ selected }) =>
@@ -476,7 +477,7 @@ interface TokenDetailProps {
                 </Tab>
               </Tab.List>
               <Tab.Panels className="mt-2">
-                <Tab.Panel>
+                <Tab.Panel> */}
                   <TransactionHistory
                     transactions={transactions}
                     transactionPage={transactionPage}
@@ -484,12 +485,12 @@ interface TokenDetailProps {
                     tokenSymbol={tokenInfo.symbol}
                     handlePageChange={handlePageChange}
                   />
-                </Tab.Panel>
+                {/* </Tab.Panel>
                 <Tab.Panel>
                   <Chats tokenAddress={address as string} tokenInfo={tokenInfo} />
                 </Tab.Panel>
               </Tab.Panels>
-            </Tab.Group>
+            </Tab.Group> */}
           </div>
 
           {/* Token Holders Section */}

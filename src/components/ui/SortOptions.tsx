@@ -24,7 +24,7 @@ const SortOptions: React.FC<SortOptionsProps> = ({ onSort, currentSort }) => {
           className={`px-3 py-1 text-[10px] sm:text-xs rounded-full transition-colors duration-200 ${
             currentSort === sortOptionMapping[option]
               ? 'bg-blue-500 text-white neon-border'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              : 'bg-gray-700 text-[#B3AEAE] hover:bg-gray-600'
           }`}
         >
           {option}
