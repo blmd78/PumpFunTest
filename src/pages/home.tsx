@@ -41,7 +41,7 @@ const HomePage: React.FC = () => {
                 Welcome to Bondle
               </motion.h1>
               <motion.p 
-                className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-6 sm:mb-8"
+                className="text-lg sm:text-xl md:text-2xl text-[#B3AEAE] mb-6 sm:mb-8"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -110,7 +110,7 @@ const HomePage: React.FC = () => {
                   <div className="bg-blue-500 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mx-auto mb-3 sm:mb-4">
                     <span className="text-white font-bold text-lg">{index + 1}</span>
                   </div>
-                  <p className="text-sm sm:text-base text-gray-300">{step}</p>
+                  <p className="text-sm sm:text-base text-[#B3AEAE]">{step}</p>
                 </motion.div>
               ))}
             </div>

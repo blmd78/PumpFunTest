@@ -87,7 +87,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
           </div>
         </div>
         <div className="grid gap-2 mb-4 text-[10px] sm:text-xs">
-          <div className="flex items-center justify-center text-gray-300">
+          <div className="flex items-center justify-center text-[#B3AEAE]">
             <span>Initial Liquidity Added</span>
           </div>
           <div className="flex items-center justify-between text-white">

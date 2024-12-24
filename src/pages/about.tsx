@@ -11,7 +11,7 @@ const AboutPage: React.FC = () => {
         <div className="mb-12">
           <div className="bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
             <h2 className="text-base sm:text-lg font-semibold text-blue-400 mb-4">What is Bondle?</h2>
-            <div className="text-gray-300 text-xs sm:text-sm leading-relaxed space-y-4">
+            <div className="text-[#B3AEAE] text-xs sm:text-sm leading-relaxed space-y-4">
               <p>
                 Bondle is a revolutionary decentralized platform that empowers individuals to create and trade tokens using innovative bonding curve technology.
               </p>
@@ -41,7 +41,7 @@ const AboutPage: React.FC = () => {
               <div key={index} className="bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col items-center text-center">
                 <item.icon className="h-12 w-12 text-blue-400 mb-4" />
                 <h3 className="text-sm sm:text-base font-semibold text-blue-400 mb-2">{item.title}</h3>
-                <p className="text-gray-300 text-xs sm:text-sm">{item.description}</p>
+                <p className="text-[#B3AEAE] text-xs sm:text-sm">{item.description}</p>
               </div>
             ))}
           </div>
@@ -50,7 +50,7 @@ const AboutPage: React.FC = () => {
         <div>
           <h2 className="text-xl font-semibold text-blue-400 mb-6 text-center">Benefits of Bonding Curves</h2>
           <div className="bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
-            <ul className="space-y-4 text-gray-300 text-xs sm:text-sm">
+            <ul className="space-y-4 text-[#B3AEAE] text-xs sm:text-sm">
               {[
                 { title: "Continuous Liquidity", description: "Tokens can always be bought or sold, ensuring a fluid market." },
                 { title: "Algorithmic Price Discovery", description: "Market price is determined automatically based on supply and demand." },

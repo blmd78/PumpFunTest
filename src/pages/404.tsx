@@ -14,7 +14,7 @@ const Custom404: React.FC = () => {
         <div className="flex flex-col items-center justify-start px-4 text-center pt-20 sm:pt-32 pb-10">
           <Ban className="w-16 h-16 sm:w-20 sm:h-20 text-[#F85454] mb-3" />
           <h1 className="text-xl sm:text-2xl font-bold text-blue-400 mb-4">Not Found</h1>
-          <p className="text-[10px] sm:text-xs text-gray-300 mb-5 max-w-xs sm:max-w-sm">
+          <p className="text-[10px] sm:text-xs text-[#B3AEAE] mb-5 max-w-xs sm:max-w-sm">
             Wait and try again later. It seems like what you are looking for doesn&apos;t exist or is still indexing.
           </p>
           <Link href="/" passHref>

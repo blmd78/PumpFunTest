@@ -22,25 +22,25 @@ const TokenHolders: React.FC<TokenHoldersProps> = ({
 }) => {
   return (
     <div className="mb-8">
-      <h2 className="text-sm sm:text-base font-semibold mb-4 text-blue-300">Token Holders</h2>
+      <h2 className="text-sm sm:text-base font-semibold mb-4 text-white">Token Holders</h2>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-xs">
           <thead>
-            <tr className="bg-gray-700">
-              <th className="p-2 text-left text-gray-300">Address</th>
-              <th className="p-2 text-left text-gray-300">Amount</th>
+            <tr className="bg-[#3F3F5D]">
+              <th className="p-2 text-left text-[#B3AEAE]">Address</th>
+              <th className="p-2 text-left text-[#B3AEAE]">Amount</th>
             </tr>
           </thead>
           <tbody>
             {/* Bonding Curve Manager as the first entry */}
-            <tr className="border-b border-gray-700">
+            <tr className="border-b border-[#3F3F5D]">
               <td className="p-2">
                 <div className="text-blue-400">Bonding Curve</div>
               </td>
               <td className="p-2 text-blue-400">Alpha</td>
             </tr>
             {tokenHolders.map((holder, index) => (
-              <tr key={index} className="border-b border-gray-700">
+              <tr key={index} className="border-b border-[#3F3F5D]">
                 <td className="p-2">
                   {holder.address === creatorAddress ? (
                     <a
@@ -76,7 +76,7 @@ const TokenHolders: React.FC<TokenHoldersProps> = ({
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="p-1 rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            className="p-1 rounded-md bg-gray-800 text-gray-400 hover:bg-[#3F3F5D] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
             <ChevronLeftIcon size={16} />
           </button>
@@ -95,7 +95,7 @@ const TokenHolders: React.FC<TokenHoldersProps> = ({
                     className={`px-2 py-1 text-xs rounded-md transition-colors duration-200 ${
                       currentPage === page
                         ? 'bg-blue-600 text-white'
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                        : 'bg-gray-800 text-gray-400 hover:bg-[#3F3F5D]'
                     }`}
                   >
                     {page}
@@ -117,7 +117,7 @@ const TokenHolders: React.FC<TokenHoldersProps> = ({
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="p-1 rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            className="p-1 rounded-md bg-gray-800 text-gray-400 hover:bg-[#3F3F5D] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
             <ChevronRightIcon size={16} />
           </button>
