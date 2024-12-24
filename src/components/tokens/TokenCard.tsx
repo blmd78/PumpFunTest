@@ -30,8 +30,8 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
   const { data: liquidityData } = useTokenLiquidity(tokenAddress);
 
   useEffect(() => {
-    if (liquidityData && liquidityData[2]) {
-      setCurrentLiquidity(liquidityData[2].toString());
+    if (liquidityData && liquidityData[1]) {
+      setCurrentLiquidity(liquidityData[1].toString());
     }
   }, [liquidityData]);
 
@@ -95,7 +95,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
             <span>{formatAmountV2(liquidityEvent.tokenAmount)}</span>
           </div>
           <div className="flex items-center justify-between text-white">
-            <span>BONE</span>
+            <span>RBTC</span>
             <span>{formatAmountV2(liquidityEvent.ethAmount)}</span>
           </div>
           <div className="flex items-center justify-between text-gray-400">
@@ -168,7 +168,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
                 <br />
                 {/* <Image
                   src="/logo/wbone.png"
-                  alt="BONE"
+                  alt="RBTC"
                   width={16}
                   height={16}
                   className="inline-block align-middle mr-1"

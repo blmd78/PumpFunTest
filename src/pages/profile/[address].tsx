@@ -29,7 +29,7 @@ const TokenBalanceItem: React.FC<TokenBalanceItemProps> = ({ tokenAddress, symbo
 
   const handleAddressClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(`https://shibariumscan.io/address/${tokenAddress}`, '_blank');
+    window.open(`https://rootstock.blockscout.com/address/${tokenAddress}`, '_blank');
   };
 
   return (
@@ -303,7 +303,7 @@ const ProfilePage: React.FC = () => {
                     <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th>
                     <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Token</th>
                     <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Amount</th>
-                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Bone</th>
+                    <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">rBTC</th>
                     <th className="px-4 py-3 text-left text-[10px] sm:text-xs font-medium text-gray-300 uppercase tracking-wider">Date</th>
                   </tr>
                 </thead>
@@ -313,7 +313,7 @@ const ProfilePage: React.FC = () => {
                       <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{tx.type}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{getTokenSymbol(tx.recipientAddress)}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{formatAmountV3(tx.tokenAmount)}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{formatAmountV3(tx.ethAmount)} BONE</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{formatAmountV3(tx.ethAmount)} RBTC</td>
                       <td className="px-4 py-3 whitespace-nowrap text-[10px] sm:text-xs text-gray-300">{formatTimestamp(tx.timestamp)}</td>
                     </tr>
                   ))}

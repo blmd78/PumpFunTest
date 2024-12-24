@@ -10,6 +10,7 @@ export const config = {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log("request received")
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' })
   }
@@ -36,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('Missing API key or bucket ID');
       return res.status(500).json({ error: 'Server configuration error' });
     }
-
+console.log("apiKey", apiKey, "bucketId", bucketId)
     const response = await axios.post(
       `https://api.chainsafe.io/api/v1/bucket/${bucketId}/upload`,
       formData,
@@ -47,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       }
     )
-
+console.log("response", response)
     if (response.data.files_details && response.data.files_details.length > 0) {
       const cid = response.data.files_details[0].cid
       const url = `https://ipfs-chainsafe.dev/ipfs/${cid}`

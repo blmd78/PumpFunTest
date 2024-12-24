@@ -1,18 +1,21 @@
 import { formatUnits, parseUnits, maxUint256, decodeEventLog, Log, TransactionReceipt, UserRejectedRequestError } from 'viem';
 import { useReadContract, useWriteContract, useBalance, useWaitForTransactionReceipt, usePublicClient } from 'wagmi';
 import BondingCurveManagerABI from '@/abi/BondingCurveManager.json';
+import LiquidityPoolABI from '@/abi/LiquidityPool.json';
+import TokenFactoryABI from '@/abi/TokenFactory.json';
 import ERC20ABI from '@/abi/ERC20.json';
 import { useCallback } from 'react';
+import { getTokenPool } from './api';
 
-const BONDING_CURVE_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_BONDING_CURVE_MANAGER_ADDRESS as `0x${string}`;
-const CREATION_FEE = parseUnits('1', 18);
+const BONDING_CURVE_MANAGER_ADDRESS = '0xAef29F6616D8334780DD6A2db16582b2Ccb605d8' as `0x${string}`;//Testnet
+const CREATION_FEE = parseUnits('0.0002', 18);
 
-export function useCurrentTokenPrice(tokenAddress: `0x${string}`) {
+export function useCurrentTokenPrice(poolAddress: `0x${string}`) {
   const { data, refetch } = useReadContract({
-    address: BONDING_CURVE_MANAGER_ADDRESS,
-    abi: BondingCurveManagerABI,
+    address: poolAddress as `0x${string}`,
+    abi: LiquidityPoolABI,
     functionName: 'getCurrentTokenPrice',
-    args: [tokenAddress],
+    args: [],
   });
   return { data: data as bigint | undefined, refetch };
 }
@@ -25,32 +28,35 @@ export function useTotalSupply(tokenAddress: `0x${string}`) {
   });
 }
 
-export function useTokenLiquidity(tokenAddress: `0x${string}`) {
+export function useTokenLiquidity(poolAddress: `0x${string}`) {
   const { data, refetch } = useReadContract({
-    address: BONDING_CURVE_MANAGER_ADDRESS,
-    abi: BondingCurveManagerABI,
-    functionName: 'tokens',
-    args: [tokenAddress],
+    address: poolAddress as `0x${string}`,
+    abi: LiquidityPoolABI,
+    functionName: 'getReserves',
+    args: [],
   });
-  return { data: data as [string, boolean, bigint] | undefined, refetch };
+  return { data: data as [bigint, bigint] | undefined, refetch };
 }
 
-export function useCalcBuyReturn(tokenAddress: `0x${string}`, ethAmount: bigint) {
+export function useCalcBuyReturn(poolAddress: `0x${string}`, ethAmount: bigint) {
+  console.log("useCalcBuyReturn ethAmount",ethAmount);
+  console.log("useCalcBuyReturn poolAddress",poolAddress);
   const { data, isLoading } = useReadContract({
-    address: BONDING_CURVE_MANAGER_ADDRESS,
-    abi: BondingCurveManagerABI,
+    address: poolAddress as `0x${string}`,
+    abi: LiquidityPoolABI,
     functionName: 'calculateCurvedBuyReturn',
-    args: [tokenAddress, ethAmount],
+    args: [ethAmount],
   });
+  console.log(" useCalcBuyReturn data",data);
   return { data: data as bigint | undefined, isLoading };
 }
 
-export function useCalcSellReturn(tokenAddress: `0x${string}`, tokenAmount: bigint) {
+export function useCalcSellReturn(poolAddress: `0x${string}`, tokenAmount: bigint) {
   const { data, isLoading } = useReadContract({
-    address: BONDING_CURVE_MANAGER_ADDRESS,
-    abi: BondingCurveManagerABI,
+    address: poolAddress as `0x${string}`,
+    abi: LiquidityPoolABI,
     functionName: 'calculateCurvedSellReturn',
-    args: [tokenAddress, tokenAmount],
+    args: [tokenAmount],
   });
   return { data: data as bigint | undefined, isLoading };
 }
@@ -115,8 +121,8 @@ export function useCreateToken() {
       const totalValue = CREATION_FEE + initialPurchaseAmount;
       const hash = await writeContractAsync({
         address: BONDING_CURVE_MANAGER_ADDRESS,
-        abi: BondingCurveManagerABI,
-        functionName: 'create',
+        abi: TokenFactoryABI,
+        functionName: 'createToken',
         args: [name, symbol],
         value: totalValue,
       });
@@ -165,10 +171,10 @@ export function useCreateToken() {
       if (tokenCreatedLog) {
         console.log('TokenCreated event found in logs');
         const decodedLog = decodeEventLog({
-          abi: BondingCurveManagerABI,
+          abi: TokenFactoryABI,
           data: tokenCreatedLog.data,
           topics: tokenCreatedLog.topics,
-        }) as unknown as { eventName: string; args: { tokenAddress: `0x${string}`; creator: `0x${string}`; name: string; symbol: string } };
+        }) as unknown as { eventName: string; args: { tokenAddress: `0x${string}`; creator: `0x${string}`; name: string; symbol: string; poolAddress: `0x${string}` } };
 
         if (decodedLog.eventName === 'TokenCreated' && decodedLog.args) {
           console.log('Token created successfully. Address:', decodedLog.args.tokenAddress);
@@ -195,13 +201,13 @@ export function useCreateToken() {
 export function useBuyTokens() {
   const { writeContractAsync, data, error, isPending } = useWriteContract();
 
-  const buyTokens = async (tokenAddress: `0x${string}`, ethAmount: bigint) => {
-    try {
+  const buyTokens = async (poolAddress: `0x${string}`, ethAmount: bigint) => {
+    try {     
       const result = await writeContractAsync({
-        address: BONDING_CURVE_MANAGER_ADDRESS,
-        abi: BondingCurveManagerABI,
-        functionName: 'buy',
-        args: [tokenAddress],
+        address: poolAddress as `0x${string}`,
+        abi: LiquidityPoolABI,
+        functionName: 'buyToken',
+        args: [],
         value: ethAmount,
       });
       return result;
@@ -217,13 +223,13 @@ export function useBuyTokens() {
 export function useSellTokens() {
   const { writeContractAsync, data, error, isPending } = useWriteContract();
 
-  const sellTokens = async (tokenAddress: `0x${string}`, amount: bigint) => {
+  const sellTokens = async (poolAddress: `0x${string}`, amount: bigint) => {
     try {
       const result = await writeContractAsync({
-        address: BONDING_CURVE_MANAGER_ADDRESS,
-        abi: BondingCurveManagerABI,
-        functionName: 'sell',
-        args: [tokenAddress, amount],
+        address: poolAddress as `0x${string}`,
+        abi: LiquidityPoolABI,
+        functionName: 'sellToken',
+        args: [amount],
       });
       return result;
     } catch (error) {
@@ -238,13 +244,13 @@ export function useSellTokens() {
 export function useApproveTokens() {
   const { writeContractAsync, data, error, isPending } = useWriteContract();
 
-  const approveTokens = async (tokenAddress: `0x${string}`) => {
+  const approveTokens = async (tokenAddress: `0x${string}`, poolAddress: `0x${string}`) => {
     try {
       const result = await writeContractAsync({
         address: tokenAddress,
         abi: ERC20ABI,
         functionName: 'approve',
-        args: [BONDING_CURVE_MANAGER_ADDRESS, maxUint256],
+        args: [poolAddress, maxUint256],
       });
       return result;
     } catch (error) {
@@ -331,5 +337,5 @@ export function shortenAddress(address: string): string {
 }
 
 export function getExplorerUrl(txHash: string): string {
-  return `https://shibariumscan.io/tx/${txHash}`;
+  return `https://rootstock.blockscout.com/tx/${txHash}`;
 }

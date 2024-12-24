@@ -60,13 +60,13 @@ const CreateToken: React.FC = () => {
     formData.append("file", file);
 
     try {
-      console.log("Uploading image to IPFS...");
+      console.log("Uploading an image to IPFS...");
       const response = await axios.post("/api/upload-to-ipfs", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      console.log("response", response)
       if (response.data.url) {
         console.log("Image uploaded successfully:", response.data.url);
         setTokenImageUrl(response.data.url);
@@ -288,7 +288,7 @@ const CreateToken: React.FC = () => {
           {showTooltip && (
             <div className="absolute left-1/2 transform -translate-x-1/2 top-12 bg-gray-800 text-[#1B1B28] p-4 rounded-md shadow-lg z-10 w-64 border border-[#D9D9D9]">
               <p className="text-[8px] sm:text-xs">
-                Cost to deploy: 1 BONE
+                Cost to deploy: 1 RBTC
                 This serves as an initial boost to the bonding curve.
               </p>
             </div>

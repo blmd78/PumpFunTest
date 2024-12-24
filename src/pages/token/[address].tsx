@@ -1,5 +1,5 @@
 import { GetServerSideProps } from 'next';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import 'chartjs-adapter-date-fns';
@@ -20,7 +20,7 @@ import {
   useApproveTokens,
   formatAmountV2,
 } from '@/utils/blockchainUtils';
-import { getTokenInfoAndTransactions, getTokenUSDPriceHistory, getTokenHolders, getTokenLiquidityEvents } from '@/utils/api';
+import { getTokenInfoAndTransactions, getTokenUSDPriceHistory, getTokenHolders, getTokenLiquidityEvents, getTokenPool } from '@/utils/api';
 import { formatTimestamp, formatAmount } from '@/utils/blockchainUtils';
 import { parseUnits, formatUnits } from 'viem';
 import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
@@ -60,7 +60,7 @@ interface TokenDetailProps {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [transactionPage, setTransactionPage] = useState(1);
   const [totalTransactionPages, setTotalTransactionPages] = useState(1);
-  const [fromToken, setFromToken] = useState({ symbol: 'BONE', amount: '' });
+  const [fromToken, setFromToken] = useState({ symbol: 'RBTC', amount: '' });
   const [toToken, setToToken] = useState({ symbol: '', amount: '' });
   const [isSwapped, setIsSwapped] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -71,9 +71,26 @@ interface TokenDetailProps {
   const [chartData, setChartData] = useState<any[]>([]);
   const [isTransacting, setIsTransacting] = useState(false);
   const [transactionHash, setTransactionHash] = useState<`0x${string}` | undefined>();
-
   const [selectedTab, setSelectedTab] = useState('trades');
+  
+  // Add this ref to store the pool address
+  const poolAddress = useRef<`0x${string}` | undefined>();
 
+  // Add this effect to fetch the pool address
+  useEffect(() => {
+    const fetchPoolAddress = async () => {
+      try {
+        const response = await getTokenPool(address as `0x${string}`);
+        poolAddress.current = response as `0x${string}`;
+      } catch (error) {
+        console.error('Error fetching pool address:', error);
+      }
+    };
+
+    if (address) {
+      fetchPoolAddress();
+    }
+  }, [address]);
 
   //holders
   const [tokenHolders, setTokenHolders] = useState<Awaited<ReturnType<typeof getTokenHolders>>>([]);
@@ -91,8 +108,8 @@ interface TokenDetailProps {
   const { data: currentPrice, refetch: refetchCurrentPrice } = useCurrentTokenPrice(address as `0x${string}`);
   const { data: liquidityData, refetch: refetchLiquidity } = useTokenLiquidity(address as `0x${string}`);
 
-  const { data: buyReturnData, isLoading: isBuyCalculating } = useCalcBuyReturn(address as `0x${string}`, parseUnits(debouncedFromAmount || '0', 18));
-  const { data: sellReturnData, isLoading: isSellCalculating } = useCalcSellReturn(address as `0x${string}`, parseUnits(debouncedFromAmount || '0', 18));
+  const { data: buyReturnData, isLoading: isBuyCalculating } = useCalcBuyReturn(poolAddress.current as `0x${string}`, parseUnits(debouncedFromAmount || '0', 18));
+  const { data: sellReturnData, isLoading: isSellCalculating } = useCalcSellReturn(poolAddress.current as `0x${string}`, parseUnits(debouncedFromAmount || '0', 18));
 
   const { ethBalance: fetchedEthBalance, tokenBalance: fetchedTokenBalance, refetch: refetchUserBalance } = useUserBalance(userAddress as `0x${string}`, address as `0x${string}`);
   const { data: tokenAllowance } = useTokenAllowance(address as `0x${string}`, userAddress as `0x${string}`, BONDING_CURVE_MANAGER_ADDRESS);
@@ -170,6 +187,7 @@ interface TokenDetailProps {
       
       try {
         const events = await getTokenLiquidityEvents(tokenInfo.id);
+        console.log("events",events);
         setLiquidityEvents(events);
       } catch (error) {
         console.error('Error fetching liquidity events:', error);
@@ -217,6 +235,11 @@ interface TokenDetailProps {
   }, [transactionReceipt, transactionError, isSwapped, isApproved, fetchAllData]);
 
   useEffect(() => {
+    console.log("debouncedFromAmount",debouncedFromAmount);
+    console.log("isSwapped",isSwapped);
+    console.log("isBuyCalculating",isBuyCalculating);
+    console.log("isSellCalculating",isSellCalculating);
+    console.log("buyReturnData",buyReturnData);
     if (debouncedFromAmount) {
       setIsCalculating(true);
       if (isSwapped) {
@@ -247,11 +270,11 @@ interface TokenDetailProps {
   const handleSwap = useCallback(() => {
     setIsSwapped((prev) => !prev);
     setFromToken((prev) => ({
-      symbol: prev.symbol === 'BONE' ? tokenInfo.symbol : 'BONE',
+      symbol: prev.symbol === 'RBTC' ? tokenInfo.symbol : 'RBTC',
       amount: '',
     }));
     setToToken((prev) => ({
-      symbol: prev.symbol === 'BONE' ? tokenInfo.symbol : 'BONE',
+      symbol: prev.symbol === 'RBTC' ? tokenInfo.symbol : 'RBTC',
       amount: '',
     }));
   }, [tokenInfo]);
@@ -274,12 +297,12 @@ interface TokenDetailProps {
       let txHash;
       if (isSwapped) {
         if (!isApproved) {
-          txHash = await approveTokens(address as `0x${string}`);
+          txHash = await approveTokens(address as `0x${string}`, poolAddress.current as `0x${string}`);
         } else {
-          txHash = await sellTokens(address as `0x${string}`, amount);
+          txHash = await sellTokens(poolAddress.current as `0x${string}`, amount);
         }
       } else {
-        txHash = await buyTokens(address as `0x${string}`, amount);
+        txHash = await buyTokens(poolAddress.current as `0x${string}`, amount);
       }
       console.log('Transaction hash:', txHash);
       setTransactionHash(txHash);
@@ -318,7 +341,7 @@ interface TokenDetailProps {
 
   const calculateProgress = (currentLiquidity: bigint): number => {
     const liquidityInEth = parseFloat(formatUnits(currentLiquidity, 18));
-    const target = 2500; 
+    const target = 0.2; 
     const progress = (liquidityInEth / target) * 100;
     return Math.min(progress, 100);
   };
@@ -350,25 +373,25 @@ interface TokenDetailProps {
         <div className="bg-gray-800 p-4 rounded-lg">
           <h2 className="text-xs sm:text-sm font-semibold mb-2 text-blue-300">Current Price</h2>
           <p className="text-[10px] sm:text-xs text-blue-400">
-            {currentPrice ? formatAmount(currentPrice.toString()) : 'Loading...'} BONE
+            {currentPrice ? formatAmount(currentPrice.toString()) : 'Loading...'} RBTC
           </p>
         </div>
         <div className="bg-gray-800 p-4 rounded-lg">
           <h2 className="text-xs sm:text-sm font-semibold mb-2 text-blue-300">Current Liquidity</h2>
           <p className="text-[10px] sm:text-xs text-blue-400 mb-2">
-            {liquidityData && liquidityData[2] ? `${formatAmountV2(liquidityData[2].toString())} BONE` : '0 BONE'}
+            {liquidityData && liquidityData[1] ? `${formatAmountV2(liquidityData[1].toString())} RBTC` : '0 RBTC'}
           </p>
-          {liquidityData && liquidityData[2] && (
+          {liquidityData && liquidityData[1] && (
             <>
               <div className="w-full bg-gray-700 rounded-full h-4 mb-2 relative">
                 <div 
                   className="bg-blue-600 h-full rounded-l-full transition-all duration-500 ease-out"
-                  style={{ width: `${calculateProgress(liquidityData[2])}%` }}
+                  style={{ width: `${calculateProgress(liquidityData[1])}%` }}
                 ></div>
                 <div 
                   className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-xs font-semibold text-white"
                 >
-                  {calculateProgress(liquidityData[2]).toFixed(2)}%
+                  {calculateProgress(liquidityData[1]).toFixed(2)}%
                 </div>
               </div>
               
@@ -384,11 +407,17 @@ interface TokenDetailProps {
           <div className="mb-8">
             <h2 className="text-sm sm:text-base font-semibold mb-4 text-blue-300">Price Chart (USD)</h2>
             <div className="bg-gray-800 p-2 sm:p-4 rounded-lg shadow">
-            <TradingViewChart 
-                data={chartData} 
-                liquidityEvents={liquidityEvents} 
-                tokenInfo={tokenInfo}
-              />
+              {liquidityEvents && liquidityEvents.data.length > 0 ? (
+                <TradingViewChart 
+                  data={chartData} 
+                  liquidityEvents={liquidityEvents} 
+                  tokenInfo={tokenInfo}
+                />
+              ) : (
+                <div className="w-full h-[500px] flex items-center justify-center">
+                  <Spinner size="large" />
+                </div>
+              )}
             </div>
           </div>
 
@@ -462,7 +491,7 @@ interface TokenDetailProps {
                 >
                   Trades
                 </Tab>
-                <Tab
+                {/* <Tab
                   className={({ selected }) =>
                     `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
                     ${
@@ -473,7 +502,7 @@ interface TokenDetailProps {
                   }
                 >
                   Chats
-                </Tab>
+                </Tab> */}
               </Tab.List>
               <Tab.Panels className="mt-2">
                 <Tab.Panel>

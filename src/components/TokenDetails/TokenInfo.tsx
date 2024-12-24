@@ -27,7 +27,7 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ tokenInfo }) => {
             <InfoItem 
               label="Contract" 
               value={tokenInfo?.address ? formatAddressV2(tokenInfo.address) : 'Loading...'}
-              link={`https://shibariumscan.io/address/${tokenInfo?.address}`}
+              link={`https://rootstock.blockscout.com/address/${tokenInfo?.address}`}
               isExternal={true}
             />
             <InfoItem 

@@ -21,13 +21,16 @@ interface PriceChartProps {
 }
 
 const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInfo }) => {
+  // console.log("PriceChart liquidityEvents",liquidityEvents);
+  // console.log("PriceChart tokenInfo",tokenInfo);
+  // console.log("PriceChart data",data);
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [chart, setChart] = useState<IChartApi | null>(null);
   const [showUniswapInfo, setShowUniswapInfo] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (liquidityEvents) {
-      setShowUniswapInfo(liquidityEvents.liquidityEvents.length > 0);
+      setShowUniswapInfo(liquidityEvents.data.length > 0);
     }
   }, [liquidityEvents]);
 
@@ -150,8 +153,8 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
     );
   }
 
-  if (showUniswapInfo && liquidityEvents.liquidityEvents.length > 0) {
-    const event = liquidityEvents.liquidityEvents[0];
+  if (showUniswapInfo && liquidityEvents.data.length > 0) {
+    const event = liquidityEvents.data[0];
     return (
       <div className="w-full h-[500px] bg-gray-800 rounded-lg overflow-hidden flex flex-col items-center justify-center p-6">
         <Image src={tokenInfo.logo} alt={tokenInfo.name} width={64} height={64} className="rounded-full mb-4" />
@@ -163,13 +166,13 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
             <p className="text-lg font-semibold text-white">{formatAmountV3(event.tokenAmount)} {tokenInfo.symbol}</p>
           </div>
           <div className="text-center">
-            <p className="text-sm text-gray-400">BONE</p>
-            <p className="text-lg font-semibold text-white">{formatAmountV3(event.ethAmount)} BONE</p>
+            <p className="text-sm text-gray-400">RBTC</p>
+            <p className="text-lg font-semibold text-white">{formatAmountV3(event.ethAmount)} RBTC</p>
           </div>
         </div>
         <div className="flex space-x-4">
           <a
-            href={`https://www.shibariumscan.io/tx/${event.txHash}`}
+            href={`https://www.rootstock.blockscout.com/tx/${event.txHash}`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"

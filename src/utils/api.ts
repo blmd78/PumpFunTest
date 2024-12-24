@@ -8,16 +8,16 @@ import { ethers } from 'ethers';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedResponse<Token>> {
+  console.log("getAllTokens",page,pageSize);
   const skip = (page - 1) * pageSize;
 
   const query = `
     query GetAllTokens($first: Int, $skip: Int) {
       tokenCreateds(first: $first, skip: $skip) {
         id
-        tokenAddress
         name
         symbol
-        poolAddress
+        pool
         blockNumber
         blockTimestamp
         transactionHash
@@ -57,7 +57,7 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
 
     const tokens = result.data.tokenCreateds.map((token: any) => ({
       id: token.id,
-      address: token.tokenAddress,
+      address: token.id,
       name: token.name,
       symbol: token.symbol,
       // Add other fields as needed
@@ -83,18 +83,81 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
 }
 
 
-export async function getRecentTokens(page: number = 1, pageSize: number = 20, hours: number = 1): Promise<PaginatedResponse<Token> | null> {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/api/tokens/recent`, {
-      params: { page, pageSize, hours }
-    });
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      // Return null to indicate no recent tokens found
-      return null;
+export async function getRecentTokens(page: number = 1, pageSize: number = 20, hours: number = 1): Promise<PaginatedResponse<Token>> {
+  console.log("getRecentTokens",page,pageSize,hours);
+  const skip = (page - 1) * pageSize;
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+  const hoursAgoTimestamp = currentTimestamp - (hours * 3600);
+
+  const query = `
+    query GetRecentTokens($first: Int!, $skip: Int!, $timestamp: BigInt!) {
+      tokenCreateds(
+        first: $first
+        skip: $skip
+        where: { blockTimestamp_gt: $timestamp }
+        orderBy: blockTimestamp
+        orderDirection: desc
+      ) {
+        id      
+        name
+        symbol
+        pool
+        blockNumber
+        blockTimestamp
+        transactionHash
+      }
     }
-    throw error; // Re-throw other errors
+  `;
+
+  const variables = {
+    first: pageSize,
+    skip: skip,
+    timestamp: hoursAgoTimestamp.toString()
+  };
+
+  try {
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error('Failed to fetch recent tokens');
+    }
+
+    const tokens = result.data.tokenCreateds.map((token: any) => ({
+      id: token.id,
+      address: token.id,
+      name: token.name,
+      symbol: token.symbol,
+      creatorAddress: '',
+      logo: '',
+      description: '',
+      createdAt: new Date(parseInt(token.blockTimestamp) * 1000).toISOString(),
+      updatedAt: new Date(parseInt(token.blockTimestamp) * 1000).toISOString(),
+      _count: {
+        liquidityEvents: 0
+      }
+    }));
+
+    return {
+      data: tokens,
+      totalCount: tokens.length,
+      currentPage: page,
+      totalPages: Math.ceil(tokens.length / pageSize),
+      tokens: []
+    };
+  } catch (error) {
+    console.error('Error fetching recent tokens:', error);
+    throw error;
   }
 }
 
@@ -103,14 +166,83 @@ export async function searchTokens(
   page: number = 1,
   pageSize: number = 20
 ): Promise<PaginatedResponse<Token>> {
+  const skip = (page - 1) * pageSize;
+
+  const graphqlQuery = `
+    query SearchTokens($first: Int!, $skip: Int!, $searchQuery: String!) {
+      tokenCreateds(
+        first: $first
+        skip: $skip
+        where: { 
+          or: [
+            { name_contains_nocase: $searchQuery },
+            { symbol_contains_nocase: $searchQuery },
+
+          ]
+        }
+        orderBy: blockTimestamp
+        orderDirection: desc
+      ) {
+        id
+        name
+        symbol
+        pool
+        blockNumber
+        blockTimestamp
+        transactionHash
+      }
+    }
+  `;
+
+  const variables = {
+    first: pageSize,
+    skip: skip,
+    searchQuery: query
+  };
+
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/tokens/search`, {
-      params: { q: query, page, pageSize }
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: graphqlQuery,
+        variables
+      }),
     });
-    return response.data;
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error('Failed to search tokens');
+    }
+
+    const tokens = result.data.tokenCreateds.map((token: any) => ({
+      id: token.id,
+      address: token.id,
+      name: token.name,
+      symbol: token.symbol,
+      creatorAddress: '',
+      logo: '',
+      description: '',
+      createdAt: new Date(parseInt(token.blockTimestamp) * 1000).toISOString(),
+      updatedAt: new Date(parseInt(token.blockTimestamp) * 1000).toISOString(),
+      _count: {
+        liquidityEvents: 0
+      }
+    }));
+
+    return {
+      data: tokens,
+      totalCount: tokens.length,
+      currentPage: page,
+      totalPages: Math.ceil(tokens.length / pageSize),
+      tokens: []
+    };
   } catch (error) {
     console.error('Error searching tokens:', error);
-    throw new Error('Failed to search tokens');
+    throw error;
   }
 }
 
@@ -122,15 +254,158 @@ export async function getTokensWithLiquidity(page: number = 1, pageSize: number 
 }
 
 export async function getTokenByAddress(address: string): Promise<Token> {
-  const response = await axios.get(`${API_BASE_URL}/api/tokens/address/${address}`);
-  return response.data;
+  address = address.toLowerCase();
+  console.log("getTokenByAddress",address);
+  const query = `
+    query GetToken($address: String!) {
+      tokenCreated(id: $address) {
+        id
+        name
+        symbol
+        pool
+        blockNumber
+        blockTimestamp
+        transactionHash
+      }
+    }
+  `;
+
+  const variables = {
+    address: address.toLowerCase()
+  };
+
+  try {
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error('Failed to fetch token');
+    }
+
+    const tokenData = result.data.tokenCreated;
+    if (!tokenData) {
+      throw new Error('Token not found');
+    }
+
+    return {
+      id: tokenData.id,
+      address: tokenData.id,
+      name: tokenData.name,
+      symbol: tokenData.symbol,
+      creatorAddress: '',
+      logo: '',
+      description: '',
+      createdAt: new Date(parseInt(tokenData.blockTimestamp) * 1000).toISOString(),
+      updatedAt: new Date(parseInt(tokenData.blockTimestamp) * 1000).toISOString(),
+      _count: {
+        liquidityEvents: 0
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching token:', error);
+    throw error;
+  }
 }
 
-export async function getTokenLiquidityEvents(tokenId: string, page: number = 1, pageSize: number = 20): Promise<PaginatedResponse<LiquidityEvent>> {
-  const response = await axios.get(`${API_BASE_URL}/api/liquidity/token/${tokenId}`, {
-    params: { page, pageSize }
-  });
-  return response.data;
+// get DEX liquidity provision events
+export async function getTokenLiquidityEvents(
+  tokenId: string, 
+  page: number = 1, 
+  pageSize: number = 20
+): Promise<PaginatedResponse<LiquidityEvent>> {
+  console.log("getTokenLiquidityEvents",tokenId,page,pageSize);
+  const skip = (page - 1) * pageSize;
+  return {
+    data: [],
+    totalCount: 0,
+    currentPage: page,
+    totalPages: 0,
+    tokens: []
+  }
+  const query = `
+    query GetLiquidityEvents($tokenId: String!, $first: Int!, $skip: Int!) {
+      tokenCreated(id: $tokenId) {
+        transactions(
+          first: $first
+          skip: $skip
+          orderBy: timestamp
+          orderDirection: desc
+        ) {
+          id
+          ethAmountAfterTax
+          tokenAmount
+          timestamp
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    tokenId,
+    first: pageSize,
+    skip: skip
+  };
+
+  try {
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      }),
+    });
+
+    const result = await response.json();
+    console.log("getTokenLiquidityEvents result",result);
+    
+    if (result.errors) {
+      console.error('GraphQL errors:', result.errors);
+      return {
+        data: [],
+        totalCount: 0,
+        currentPage: page,
+        totalPages: 0,
+        tokens: []
+      };
+    }
+
+    const events = result.data.tokenCreated.transactions.map((event: any) => ({
+      id: event.id,
+      ethAmount: event.ethAmountAfterTax,
+      tokenAmount: event.tokenAmount,
+      timestamp: event.timestamp
+    }));
+
+    return {
+      data: events,
+      totalCount: events.length,
+      currentPage: page,
+      totalPages: Math.ceil(events.length / pageSize),
+      tokens: []
+    };
+  } catch (error) {
+    console.error('Error fetching liquidity events:', error);
+    return {
+      data: [],
+      totalCount: 0,
+      currentPage: page,
+      totalPages: 0,
+      tokens: []
+    };
+  }
 }
 
 export async function getTokenInfoAndTransactions(
@@ -138,17 +413,16 @@ export async function getTokenInfoAndTransactions(
   transactionPage: number = 1,
   transactionPageSize: number = 10
 ): Promise<TokenWithTransactions> {
-  console.log("address",address);
+  console.log("getTokenInfoAndTransactions",address);
   const skip = (transactionPage - 1) * transactionPageSize;
 
   const query = `
     query GetTokenInfoAndTransactions($address: String!, $first: Int!, $skip: Int!) {
-      tokenCreated: tokenCreateds(where: { tokenAddress: $address }) {
+      tokenCreated( id: $address ) {
         id
-        tokenAddress
         name
         symbol
-        poolAddress
+        pool{id}
         blockNumber
         blockTimestamp
         transactionHash
@@ -156,7 +430,7 @@ export async function getTokenInfoAndTransactions(
       transactions: transactions(
         first: $first
         skip: $skip
-        where: { tokenAddress: $address }
+        where: { token: $address }
         orderBy: timestamp
         orderDirection: desc
       ) {
@@ -164,13 +438,12 @@ export async function getTokenInfoAndTransactions(
         type
         senderAddress
         recipientAddress
-        ethAmount
+        ethAmountAfterTax
         tokenAmount
         tokenPrice
         txHash
         timestamp
-        poolAddress
-        tokenAddress
+        pool{id}
         tax
       }
     }
@@ -183,7 +456,6 @@ export async function getTokenInfoAndTransactions(
   };
 
   try {
-    console.log("query",query);
     const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
       method: 'POST',
       headers: {
@@ -201,12 +473,15 @@ export async function getTokenInfoAndTransactions(
       throw new Error('Failed to fetch token info');
     }
 
-    const tokenData = result.data.tokenCreated[0];
-    const transactions = result.data.transactions;
+    const tokenData = result.data.tokenCreated;
+    if (!tokenData) {
+    throw new Error('Token not found');
+  }
+  const transactions = result.data.transactions || []
 
     return {
       id: tokenData.id,
-      address: tokenData.tokenAddress,
+      address: tokenData.id,
       name: tokenData.name,
       symbol: tokenData.symbol,
       creatorAddress: '', // This might need to come from a different query
@@ -228,13 +503,12 @@ export async function getTokenInfoAndTransactions(
           type: tx.type,
           senderAddress: tx.senderAddress,
           recipientAddress: tx.recipientAddress,
-          ethAmount: tx.ethAmount,
+          ethAmount: tx.ethAmountAfterTax,
           tokenAmount: tx.tokenAmount,
           tokenPrice: tx.tokenPrice,
           txHash: tx.txHash,
           timestamp: new Date(parseInt(tx.timestamp) * 1000).toISOString(),
-          poolAddress: tx.poolAddress,
-          tokenAddress: tx.tokenAddress,
+          poolAddress: tx.pool,
           tax: tx.tax
         })),
         pagination: {
@@ -253,7 +527,7 @@ export async function getTokenInfoAndTransactions(
 
 
 //historical price
-export async function getHistoricalPriceData(address: string): Promise<Token> {
+export async function getHistoricalPriceData(address: string): Promise<HistoricalPrice[]> {
   const response = await axios.get(`${API_BASE_URL}/api/tokens/address/${address}/historical-prices`);
   return response.data;
 }
@@ -404,7 +678,7 @@ export async function getTokensByCreator(
 //blockexplorer Get token Holders
 export async function getTokenHolders(tokenAddress: string): Promise<TokenHolder[]> {
   try {
-    const response = await axios.get(`https://www.shibariumscan.io/api/v2/tokens/${tokenAddress}/holders`);
+    const response = await axios.get(`https://www.rootstock.blockscout.com/api/v2/tokens/${tokenAddress}/holders`);
     const data = response.data;
 
     return data.items.map((item: any) => {
@@ -416,6 +690,50 @@ export async function getTokenHolders(tokenAddress: string): Promise<TokenHolder
   } catch (error) {
     console.error('Error fetching token holders:', error);
     throw new Error('Failed to fetch token holders');
+  }
+}
+
+export async function getTokenPool(tokenAddress: string): Promise<string> {
+  const query = `
+    query GetTokenPool($address: String!) {
+      tokenCreated(id: $address) {
+        pool {
+          id
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    address: tokenAddress.toLowerCase()
+  };
+
+  try {
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error('Failed to fetch token pool');
+    }
+
+    if (!result.data?.tokenCreated?.pool?.id) {
+      throw new Error('Pool not found for token');
+    }
+
+    return result.data.tokenCreated.pool.id;
+  } catch (error) {
+    console.error('Error fetching token pool:', error);
+    throw error;
   }
 }
 
