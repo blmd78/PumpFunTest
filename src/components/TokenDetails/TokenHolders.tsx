@@ -9,11 +9,13 @@ interface TokenHoldersProps {
   totalPages: number;
   tokenSymbol: string;
   creatorAddress: string;
+  poolAddress: string;
   onPageChange: (page: number) => void;
 }
 
 const TokenHolders: React.FC<TokenHoldersProps> = ({
   tokenHolders,
+  poolAddress,
   currentPage,
   totalPages,
   tokenSymbol,
@@ -37,9 +39,13 @@ const TokenHolders: React.FC<TokenHoldersProps> = ({
               <td className="p-2">
                 <div className="text-blue-400">Bonding Curve</div>
               </td>
-              <td className="p-2 text-blue-400">Alpha</td>
+              <td className="p-2 text-blue-400">
+                {formatAmountV3(tokenHolders.find(holder => holder.address === poolAddress)?.balance || '0')}
+              </td>
             </tr>
-            {tokenHolders.map((holder, index) => (
+            {tokenHolders
+              .filter(holder => holder.address !== poolAddress)
+              .map((holder, index) => (
               <tr key={index} className="border-b border-[#3F3F5D]">
                 <td className="p-2">
                   {holder.address === creatorAddress ? (

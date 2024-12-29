@@ -17,7 +17,8 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: '/api/proxy',
+        // destination: '/api/proxy',
+        destination: 'https://likeaserback.onrender.com/api/:path*'
       },
     ];
   },

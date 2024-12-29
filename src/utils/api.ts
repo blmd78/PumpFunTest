@@ -21,6 +21,7 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
         blockNumber
         blockTimestamp
         transactionHash
+        creator{id}
       }
     }
   `;
@@ -60,9 +61,11 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
       address: token.id,
       name: token.name,
       symbol: token.symbol,
-      // Add other fields as needed
+      creatorAddress: token.creator.id,
+      createdAt: token.blockTimestamp,
+      updatedAt: token.blockTimestamp,
     }));
-
+console.log("tokens",tokens);
     return {
       data: tokens,
       totalCount: tokens.length, // Adjust this if you have a way to get the total count
@@ -528,18 +531,77 @@ export async function getTokenInfoAndTransactions(
 
 //historical price
 export async function getHistoricalPriceData(address: string): Promise<HistoricalPrice[]> {
-  const response = await axios.get(`${API_BASE_URL}/api/tokens/address/${address}/historical-prices`);
-  return response.data;
+  const query = `
+    query GetHistoricalPrices($address: String!) {
+      transactions(
+        where: { token: $address }
+        orderBy: timestamp
+        orderDirection: asc
+      ) {
+        id
+        tokenPrice
+        timestamp
+      }
+    }
+  `;
+
+  const variables = {
+    address: address.toLowerCase()
+  };
+
+  try {
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error('Failed to fetch historical prices');
+    }
+
+    return result.data.transactions.map((tx: any) => ({
+      tokenPrice: tx.tokenPrice,
+      timestamp: new Date(parseInt(tx.timestamp) * 1000).toISOString()
+    }));
+  } catch (error) {
+    console.error('Error fetching historical prices:', error);
+    throw error;
+  }
 }
 
-//eth price usd
+let lastPrice = '0';
+let lastFetch = 0;
+const CACHE_DURATION = 60000; // 1 minute in milliseconds
+
 export async function getCurrentPrice(): Promise<string> {
+  // Return cached price if it's less than 1 minute old
+  if (lastPrice && Date.now() - lastFetch < CACHE_DURATION) {
+    return lastPrice;
+  }
+
   try {
-    const response = await axios.get<PriceResponse>(`${API_BASE_URL}/api/price`);
-    return response.data.price;
+    const response = await axios.get(
+      'https://api.coingecko.com/api/v3/simple/price?ids=rootstock&vs_currencies=usd'
+    );
+    
+    if (response.data.rootstock?.usd) {
+      lastPrice = response.data.rootstock.usd.toString();
+      lastFetch = Date.now();
+      return lastPrice;
+    }
+    
+    throw new Error('rBTC price not found');
   } catch (error) {
-    console.error('Error fetching current price:', error);
-    throw new Error('Failed to fetch current price');
+    console.error('Error fetching rBTC price:', error);
+    throw error;
   }
 }
 
@@ -581,7 +643,9 @@ export async function updateToken(
   }
 ): Promise<Token> {
   try {
-    const response = await axios.patch(`${API_BASE_URL}/api/tokens/update/${address}`, data);
+    console.log("updateToken",address,data);
+    // const response = await axios.patch(`${API_BASE_URL}/api/tokens/update/${address}`, data);
+    const response = await axios.patch(`/api/tokens/update/${address}`, data);
     return response.data;
   } catch (error) {
     console.error('Error updating token:', error);
@@ -678,18 +742,36 @@ export async function getTokensByCreator(
 //blockexplorer Get token Holders
 export async function getTokenHolders(tokenAddress: string): Promise<TokenHolder[]> {
   try {
-    const response = await axios.get(`https://www.rootstock.blockscout.com/api/v2/tokens/${tokenAddress}/holders`);
-    const data = response.data;
+    const response = await axios.get(
+      `https://rootstock-testnet.blockscout.com/api`, {
+        params: {
+          module: 'token',
+          action: 'getTokenHolders',
+          contractaddress: tokenAddress,
+          // Add these parameters as per Blockscout docs
+          page: 1,
+          offset: 100
+        }
+      }
+    );
 
-    return data.items.map((item: any) => {
-      return {
-        address: item.address.hash,
-        balance: item.value
-      };
-    });
+    console.log("Token holders response:", response.data);
+
+    if (response.data.status !== '1') {
+      console.error('API Error:', response.data.message);
+      throw new Error(response.data.message || 'Failed to fetch token holders');
+    }
+
+    const holders = response.data.result.map((item: any) => ({
+      address: item.address,
+      balance: item.value
+    }));
+
+    console.log("Processed holders:", holders);
+    return holders;
   } catch (error) {
     console.error('Error fetching token holders:', error);
-    throw new Error('Failed to fetch token holders');
+    throw error;
   }
 }
 

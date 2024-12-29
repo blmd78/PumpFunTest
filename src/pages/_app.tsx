@@ -13,7 +13,7 @@ import { WebSocketProvider } from '@/components/providers/WebSocketProvider';
 
 const config = getDefaultConfig({
   appName: "likeaser",
-  projectId: "YOUR_WALLET_CONNECT_PROJECT_ID",
+  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? 'YOUR_PROJECT_ID',
   chains: [
     {
       ...rootstockTestnet,

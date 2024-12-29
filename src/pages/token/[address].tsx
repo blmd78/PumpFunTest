@@ -235,11 +235,6 @@ interface TokenDetailProps {
   }, [transactionReceipt, transactionError, isSwapped, isApproved, fetchAllData]);
 
   useEffect(() => {
-    console.log("debouncedFromAmount",debouncedFromAmount);
-    console.log("isSwapped",isSwapped);
-    console.log("isBuyCalculating",isBuyCalculating);
-    console.log("isSellCalculating",isSellCalculating);
-    console.log("buyReturnData",buyReturnData);
     if (debouncedFromAmount) {
       setIsCalculating(true);
       if (isSwapped) {
@@ -408,17 +403,11 @@ interface TokenDetailProps {
           <div className="mb-8">
             <h2 className="text-sm sm:text-base font-semibold mb-4 text-white">Price Chart (USD)</h2>
             <div className="bg-[#3F3F5D] p-2 sm:p-4 rounded-lg shadow">
-              {liquidityEvents && liquidityEvents.data.length > 0 ? (
                 <TradingViewChart 
                   data={chartData} 
                   liquidityEvents={liquidityEvents} 
                   tokenInfo={tokenInfo}
                 />
-              ) : (
-                <div className="w-full h-[500px] flex items-center justify-center">
-                  <Spinner size="large" />
-                </div>
-              )}
             </div>
           </div>
 
@@ -525,6 +514,7 @@ interface TokenDetailProps {
           {/* Token Holders Section */}
           <TokenHolders
             tokenHolders={currentHolders}
+            poolAddress={poolAddress.current || ''}
             currentPage={currentPage}
             totalPages={Math.ceil(tokenHolders.length / holdersPerPage)}
             tokenSymbol={tokenInfo.symbol}

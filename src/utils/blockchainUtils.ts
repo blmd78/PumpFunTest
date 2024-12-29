@@ -7,7 +7,7 @@ import ERC20ABI from '@/abi/ERC20.json';
 import { useCallback } from 'react';
 import { getTokenPool } from './api';
 
-const BONDING_CURVE_MANAGER_ADDRESS = '0xAef29F6616D8334780DD6A2db16582b2Ccb605d8' as `0x${string}`;//Testnet
+const BONDING_CURVE_MANAGER_ADDRESS = '0x20a4915381Bb975D0A90D61aA9F3F1cbE7da01E1' as `0x${string}`; // Testnet
 const CREATION_FEE = parseUnits('0.0002', 18);
 
 export function useCurrentTokenPrice(poolAddress: `0x${string}`) {
@@ -39,15 +39,12 @@ export function useTokenLiquidity(poolAddress: `0x${string}`) {
 }
 
 export function useCalcBuyReturn(poolAddress: `0x${string}`, ethAmount: bigint) {
-  console.log("useCalcBuyReturn ethAmount",ethAmount);
-  console.log("useCalcBuyReturn poolAddress",poolAddress);
   const { data, isLoading } = useReadContract({
     address: poolAddress as `0x${string}`,
     abi: LiquidityPoolABI,
     functionName: 'calculateCurvedBuyReturn',
     args: [ethAmount],
   });
-  console.log(" useCalcBuyReturn data",data);
   return { data: data as bigint | undefined, isLoading };
 }
 
@@ -289,9 +286,8 @@ export const formatAmountV3 = (amount: string, decimals: number = 18) => {
 
 export function formatTimestamp(timestamp: string): string {
   const now = new Date();
-  const date = new Date(timestamp);
+  const date = new Date(Number(timestamp) * 1000);
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
   if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
