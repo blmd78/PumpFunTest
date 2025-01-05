@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const SUBGRAPH_URL = '/api/subgraph';
+const SUBGRAPH_URL = 'http://35.234.119.105:8000/subgraphs/name/likeaser-testnet';
 
 export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedResponse<Token>> {
   const skip = (page - 1) * pageSize;
