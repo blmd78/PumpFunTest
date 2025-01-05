@@ -28,19 +28,19 @@ const PriceLiquidity: React.FC<PriceLiquidityProps> = ({ address }) => {
       <div className="bg-gray-800 p-4 rounded-lg">
         <h2 className="text-base sm:text-lg font-semibold mb-2 text-blue-300">Current Liquidity</h2>
         <p className="text-lg sm:text-xl text-blue-400 mb-2">
-          {liquidityData && liquidityData[2] ? `${formatAmountV2(liquidityData[2].toString())} RBTC` : '0 RBTC'}
+          {liquidityData && liquidityData[1] ? `${formatAmountV2(liquidityData[1].toString())} RBTC` : '0 RBTC'}
         </p>
-        {liquidityData && liquidityData[2] && (
+        {liquidityData && liquidityData[1] && (
           <>
             <div className="w-full bg-gray-700 rounded-full h-4 mb-2 relative">
               <div 
                 className="bg-blue-600 h-full rounded-l-full transition-all duration-500 ease-out"
-                style={{ width: `${calculateProgress(liquidityData[2])}%` }}
+                style={{ width: `${calculateProgress(liquidityData[1])}%` }}
               ></div>
               <div 
                 className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-xs font-semibold text-white"
               >
-                {calculateProgress(liquidityData[2]).toFixed(2)}%
+                {calculateProgress(liquidityData[1]).toFixed(2)}%
               </div>
             </div>
           </>
