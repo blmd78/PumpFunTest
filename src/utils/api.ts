@@ -478,11 +478,11 @@ export async function getTokenInfoAndTransactions(
       _count: {
         liquidityEvents: 0
       },
-      youtube: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      discord: "https://discord.gg/likeaser ",
-      twitter: "https://twitter.com/likeaser",
-      website: "https://likeaser.io",
-      telegram: "https://t.me/likeaser",
+      youtube: "",
+      discord: "",
+      twitter: "https://x.com/MonarkExchange",
+      website: "https://monark.exchange",
+      telegram: "",
       transactions: {
         data: transactions.map((tx: any) => ({
           id: tx.id,

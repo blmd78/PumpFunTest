@@ -265,7 +265,7 @@ const Home: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
           <SortOptions onSort={handleSort} currentSort={sort} />
         </div>
-        <div className="flex items-center space-x-1 mb-4">
+        {/* <div className="flex items-center space-x-1 mb-4">
           <Switch
             checked={showNewTokens}
             onCheckedChange={toggleNewTokens}
@@ -292,7 +292,7 @@ const Home: React.FC = () => {
               ({newTokensBuffer.length} new)
             </span>
           )}
-        </div>
+        </div> */}
         {isLoading ? (
           <div className="flex justify-center items-center mt-10">
             <Spinner size="medium" />
