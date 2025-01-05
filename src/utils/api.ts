@@ -6,11 +6,13 @@ import { ethers } from 'ethers';
 
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const SUBGRAPH_URL = '/api/subgraph';
+const SUBGRAPH_URL = typeof window === 'undefined' 
+  ? process.env.NEXT_PUBLIC_SUBGRAPH_URL || 'http://35.234.119.105:8000/subgraphs/name/likeaser-testnet'
+  : '/api/subgraph';
 
 export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedResponse<Token>> {
   const skip = (page - 1) * pageSize;
-
+  console.log("getAllTokens")
   const query = `
     query GetAllTokens($first: Int, $skip: Int) {
       tokenCreateds(first: $first, skip: $skip) {
@@ -44,6 +46,7 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
     });
 
     const result = await response.json();
+    console.log("result", result)
     if (result.errors) {
       console.error('GraphQL errors:', result.errors);
       return {
@@ -398,7 +401,7 @@ export async function getTokenInfoAndTransactions(
   transactionPageSize: number = 10
 ): Promise<TokenWithTransactions> {
   const skip = (transactionPage - 1) * transactionPageSize;
-
+  console.log("getTokenInfoAndTransactions")
   const query = `
     query GetTokenInfoAndTransactions($address: String!, $first: Int!, $skip: Int!) {
       tokenCreated( id: $address ) {
@@ -451,6 +454,7 @@ export async function getTokenInfoAndTransactions(
     });
 
     const result = await response.json();
+    console.log("result", result)
     if (result.errors) {
       throw new Error('Failed to fetch token info');
     }
