@@ -6,6 +6,7 @@ import { ethers } from 'ethers';
 
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const SUBGRAPH_URL = process.env.NEXT_PUBLIC_ROOTSTOCK_TESTNET_SUBGRAPH_URL || '/api/subgraph/likeaser-testnet';
 
 export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedResponse<Token>> {
   const skip = (page - 1) * pageSize;
@@ -31,7 +32,7 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -115,7 +116,7 @@ export async function getRecentTokens(page: number = 1, pageSize: number = 20, h
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -200,7 +201,7 @@ export async function searchTokens(
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -273,7 +274,7 @@ export async function getTokenByAddress(address: string): Promise<Token> {
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -341,7 +342,7 @@ export async function getTokenLiquidityEvents(
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -438,7 +439,7 @@ export async function getTokenInfoAndTransactions(
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -528,7 +529,7 @@ export async function getHistoricalPriceData(address: string): Promise<Historica
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -675,7 +676,7 @@ export async function getTransactionsByAddress(
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -774,7 +775,7 @@ export async function getAllTokenAddresses(): Promise<Array<{address: string, sy
   `;
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query })
@@ -828,7 +829,7 @@ export async function getTokensByCreator(
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query, variables })
@@ -915,7 +916,7 @@ export async function getTokenPool(tokenAddress: string): Promise<string> {
   };
 
   try {
-    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+    const response = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

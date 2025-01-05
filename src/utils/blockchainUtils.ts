@@ -285,7 +285,6 @@ export const formatAmountV3 = (amount: string, decimals: number = 18) => {
 };
 
 export function formatTimestamp(timestamp: string): string {
-  console.log("timestamp",timestamp);
   const now = new Date();
   const date = new Date(Number(timestamp) * 1000);
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
