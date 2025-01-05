@@ -16,8 +16,8 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/subgraph/:path*',
-        destination: 'http://35.234.119.105:8000/subgraphs/name/likeaser-testnet/:path*'
+        source: '/api/subgraph',
+        destination: 'http://35.234.119.105:8000/subgraphs/name/likeaser-testnet'
       },
       {
         source: '/api/:path*',
