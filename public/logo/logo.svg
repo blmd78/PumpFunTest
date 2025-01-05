@@ -11,5 +11,5 @@
     .bracket { stroke: #0000FF; stroke-width: 6; fill: none; filter: url(#neon); }
   </style>
   <path d="M20,50 A30,30 0 0 1 50,20" class="bracket"/>
-  <text x="60" y="70" class="text">Bondle.</text>
+  <text x="60" y="70" class="text">likeaser.</text>
 </svg>

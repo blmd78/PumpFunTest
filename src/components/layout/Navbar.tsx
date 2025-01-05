@@ -113,7 +113,7 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
             <Link href="/" className="flex items-center text-xl font-bold text-blue-400">
-            <img src={logo} alt="Bondle" className="h-[2rem] w-[10rem] mr-2" />
+            <img src={logo} alt="likeaser" className="h-[2rem] w-[10rem] mr-2" />
               {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -131,7 +131,7 @@ const Navbar: React.FC = () => {
                 <circle cx="5" cy="19" r="2"/>
                 <path d="M5 17A12 12 0 0 1 17 5"/>
               </svg>
-              <span>Bondle.</span> */}
+              <span>likeaser.</span> */}
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-3">

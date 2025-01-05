@@ -200,7 +200,7 @@ const Footer = () => {
             <div className="flex items-center">
               <img
                 src={logo}
-                alt="Bondle"
+                alt="likeaser"
                 className="h-[2rem] w-[10rem] mr-2"
               />
             </div>

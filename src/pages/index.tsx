@@ -250,8 +250,8 @@ const Home: React.FC = () => {
   return (
     <Layout>
       <SEO
-        title="Create and Trade Memecoins Easily on Bondle."
-        description="The ultimate platform for launching and trading memecoins on Shibarium. Create your own tokens effortlessly and engage in fair, dynamic trading."
+        title="Create and Trade Memecoins Easily on Likeaser."
+        description="The ultimate platform for launching and trading memecoins on Rootstock. Create your own tokens effortlessly and engage in fair, dynamic trading."
         image="seo/home.jpg"
       />
       <HowItWorksPopup />
