@@ -9,9 +9,9 @@ interface SortOptionsProps {
 
 const sortOptionMapping: { [key: string]: SortOption } = {
   'All': 'all',
-  'Creation Time': 'recentCreated',
+  //'Creation Time': 'recentCreated',
   //'Ended': 'ended',
-  'Bomper': 'bomper'
+  //'Bomper': 'bomper'
 };
 
 const SortOptions: React.FC<SortOptionsProps> = ({ onSort, currentSort }) => {

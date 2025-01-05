@@ -105,8 +105,8 @@ interface TokenDetailProps {
 
   const [debouncedFromAmount] = useDebounce(fromToken.amount, 300);
 
-  const { data: currentPrice, refetch: refetchCurrentPrice } = useCurrentTokenPrice(address as `0x${string}`);
-  const { data: liquidityData, refetch: refetchLiquidity } = useTokenLiquidity(address as `0x${string}`);
+  const { data: currentPrice, refetch: refetchCurrentPrice } = useCurrentTokenPrice(poolAddress.current as `0x${string}`);
+  const { data: liquidityData, refetch: refetchLiquidity } = useTokenLiquidity(poolAddress.current as `0x${string}`);
 
   const { data: buyReturnData, isLoading: isBuyCalculating } = useCalcBuyReturn(poolAddress.current as `0x${string}`, parseUnits(debouncedFromAmount || '0', 18));
   const { data: sellReturnData, isLoading: isSellCalculating } = useCalcSellReturn(poolAddress.current as `0x${string}`, parseUnits(debouncedFromAmount || '0', 18));
@@ -187,7 +187,6 @@ interface TokenDetailProps {
       
       try {
         const events = await getTokenLiquidityEvents(tokenInfo.id);
-        console.log("events",events);
         setLiquidityEvents(events);
       } catch (error) {
         console.error('Error fetching liquidity events:', error);
@@ -369,7 +368,7 @@ interface TokenDetailProps {
         <div className="bg-[#3F3F5D] p-4 rounded-lg">
           <h2 className="text-xs sm:text-sm font-semibold mb-2 text-white">Current Price</h2>
           <p className="text-[10px] sm:text-xs text-[#F7931A]">
-            {currentPrice ? formatAmount(currentPrice.toString()) : 'Loading...'} RBTC
+            {currentPrice ? Number(formatUnits(currentPrice, 18)).toFixed(18) : 'Loading...'} RBTC
           </p>
         </div>
         <div className="bg-[#3F3F5D] p-4 rounded-lg">

@@ -158,7 +158,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
     return (
       <div className="w-full h-[500px] bg-gray-800 rounded-lg overflow-hidden flex flex-col items-center justify-center p-6">
         <Image src={tokenInfo.logo} alt={tokenInfo.name} width={64} height={64} className="rounded-full mb-4" />
-        <h2 className="text-lg font-bold text-white mb-2">{tokenInfo.name} Listed on Chewyswap</h2>
+        <h2 className="text-lg font-bold text-white mb-2">{tokenInfo.name} Listed on Monark</h2>
         <br/>
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="text-center">
@@ -172,7 +172,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
         </div>
         <div className="flex space-x-4">
           <a
-            href={`https://www.rootstock.blockscout.com/tx/${event.txHash}`}
+            href={`https://rootstock.blockscout.com/tx/${event.id.split('-')[0]}`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
@@ -180,12 +180,13 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
             View TXID
           </a>
           <a
-            href={`https://chewyswap.dog/swap/?outputCurrency=${tokenInfo.address}&chain=shibarium`}
+            // href={`https://chewyswap.dog/swap/?outputCurrency=${tokenInfo.address}&chain=shibarium`}
+            href={`https://monark.exchange/swap`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-red-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded"
           >
-            Buy on Chewy
+            Buy on Monark
           </a>
         </div>
       </div>

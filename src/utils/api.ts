@@ -8,7 +8,6 @@ import { ethers } from 'ethers';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedResponse<Token>> {
-  console.log("getAllTokens",page,pageSize);
   const skip = (page - 1) * pageSize;
 
   const query = `
@@ -44,7 +43,6 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
     });
 
     const result = await response.json();
-    console.log(result);
     if (result.errors) {
       console.error('GraphQL errors:', result.errors);
       return {
@@ -65,7 +63,6 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
       createdAt: token.blockTimestamp,
       updatedAt: token.blockTimestamp,
     }));
-console.log("tokens",tokens);
     return {
       data: tokens,
       totalCount: tokens.length, // Adjust this if you have a way to get the total count
@@ -87,7 +84,6 @@ console.log("tokens",tokens);
 
 
 export async function getRecentTokens(page: number = 1, pageSize: number = 20, hours: number = 1): Promise<PaginatedResponse<Token>> {
-  console.log("getRecentTokens",page,pageSize,hours);
   const skip = (page - 1) * pageSize;
   const currentTimestamp = Math.floor(Date.now() / 1000);
   const hoursAgoTimestamp = currentTimestamp - (hours * 3600);
@@ -258,7 +254,6 @@ export async function getTokensWithLiquidity(page: number = 1, pageSize: number 
 
 export async function getTokenByAddress(address: string): Promise<Token> {
   address = address.toLowerCase();
-  console.log("getTokenByAddress",address);
   const query = `
     query GetToken($address: String!) {
       tokenCreated(id: $address) {
@@ -326,29 +321,15 @@ export async function getTokenLiquidityEvents(
   page: number = 1, 
   pageSize: number = 20
 ): Promise<PaginatedResponse<LiquidityEvent>> {
-  console.log("getTokenLiquidityEvents",tokenId,page,pageSize);
   const skip = (page - 1) * pageSize;
-  return {
-    data: [],
-    totalCount: 0,
-    currentPage: page,
-    totalPages: 0,
-    tokens: []
-  }
+
   const query = `
     query GetLiquidityEvents($tokenId: String!, $first: Int!, $skip: Int!) {
-      tokenCreated(id: $tokenId) {
-        transactions(
-          first: $first
-          skip: $skip
-          orderBy: timestamp
-          orderDirection: desc
-        ) {
-          id
-          ethAmountAfterTax
-          tokenAmount
-          timestamp
-        }
+      migrations(where: {token: $tokenId}) {
+        amount0
+        amount1
+        dexPool
+        id
       }
     }
   `;
@@ -372,7 +353,6 @@ export async function getTokenLiquidityEvents(
     });
 
     const result = await response.json();
-    console.log("getTokenLiquidityEvents result",result);
     
     if (result.errors) {
       console.error('GraphQL errors:', result.errors);
@@ -385,10 +365,10 @@ export async function getTokenLiquidityEvents(
       };
     }
 
-    const events = result.data.tokenCreated.transactions.map((event: any) => ({
+    const events = result.data.migrations.map((event: any) => ({
       id: event.id,
-      ethAmount: event.ethAmountAfterTax,
-      tokenAmount: event.tokenAmount,
+      ethAmount: event.amount0 < event.amount1 ? event.amount0 : event.amount1,
+      tokenAmount: event.amount0 > event.amount1 ? event.amount0 : event.amount1,
       timestamp: event.timestamp
     }));
 
@@ -416,7 +396,6 @@ export async function getTokenInfoAndTransactions(
   transactionPage: number = 1,
   transactionPageSize: number = 10
 ): Promise<TokenWithTransactions> {
-  console.log("getTokenInfoAndTransactions",address);
   const skip = (transactionPage - 1) * transactionPageSize;
 
   const query = `
@@ -440,7 +419,7 @@ export async function getTokenInfoAndTransactions(
         id
         type
         senderAddress
-        recipientAddress
+        token{id}
         ethAmountAfterTax
         tokenAmount
         tokenPrice
@@ -471,7 +450,6 @@ export async function getTokenInfoAndTransactions(
     });
 
     const result = await response.json();
-    console.log("getTokenInfoAndTransactions",result);
     if (result.errors) {
       throw new Error('Failed to fetch token info');
     }
@@ -505,12 +483,12 @@ export async function getTokenInfoAndTransactions(
           id: tx.id,
           type: tx.type,
           senderAddress: tx.senderAddress,
-          recipientAddress: tx.recipientAddress,
+          recipientAddress: tx.token.id,
           ethAmount: tx.ethAmountAfterTax,
           tokenAmount: tx.tokenAmount,
           tokenPrice: tx.tokenPrice,
           txHash: tx.txHash,
-          timestamp: new Date(parseInt(tx.timestamp) * 1000).toISOString(),
+          timestamp: tx.timestamp,
           poolAddress: tx.pool,
           tax: tx.tax
         })),
@@ -643,7 +621,6 @@ export async function updateToken(
   }
 ): Promise<Token> {
   try {
-    console.log("updateToken",address,data);
     // const response = await axios.patch(`${API_BASE_URL}/api/tokens/update/${address}`, data);
     const response = await axios.patch(`/api/tokens/update/${address}`, data);
     return response.data;
@@ -659,11 +636,85 @@ export async function getTransactionsByAddress(
   page: number = 1, 
   pageSize: number = 10
 ): Promise<TransactionResponse> {
+  const skip = (page - 1) * pageSize;
+
+  const query = `
+    query GetUserTransactions($address: String!, $first: Int!, $skip: Int!) {
+      user(id: $address) {
+        transactions(
+          first: $first
+          skip: $skip
+          orderBy: timestamp
+          orderDirection: desc
+        ) {
+          id
+          type
+          senderAddress
+          token{id}
+          ethAmountAfterTax
+          tokenAmount
+          tokenPrice
+          txHash
+          timestamp
+          pool { id }
+          tax
+          token { 
+            id
+            symbol 
+            name
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    address: address.toLowerCase(),
+    first: pageSize,
+    skip: skip
+  };
+
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/transactions/address/${address}`, {
-      params: { page, pageSize }
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      }),
     });
-    return response.data;
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error('Failed to fetch transactions');
+    }
+
+    const transactions = result.data.user?.transactions || [];
+
+    return {
+      transactions: transactions.map((tx: any) => ({
+        id: tx.id,
+        type: tx.type,
+        senderAddress: tx.senderAddress,
+        recipientAddress: tx.token.id,
+        ethAmount: tx.ethAmountAfterTax,
+        tokenAmount: tx.tokenAmount,
+        tokenPrice: tx.tokenPrice,
+        txHash: tx.txHash,
+        timestamp: tx.timestamp,
+        poolAddress: tx.pool?.id,
+        tax: tx.tax
+      })),
+      pagination: {
+        currentPage: page,
+        pageSize: pageSize,
+        totalCount: transactions.length,
+        totalPages: Math.ceil(transactions.length / pageSize)
+      }
+    };
   } catch (error) {
     console.error('Error fetching transactions:', error);
     throw new Error('Failed to fetch transactions');
@@ -713,12 +764,35 @@ export async function getChatMessages(token: string): Promise<Array<{
 
 //get all token address
 export async function getAllTokenAddresses(): Promise<Array<{address: string, symbol: string}>> {
+  const query = `
+    query GetAllTokenAddresses {
+      tokenCreateds {
+        id
+        symbol
+      }
+    }
+  `;
+
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/tokens/addresses`);
-    return response.data;
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
+    });
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error('Failed to fetch token addresses');
+    }
+
+    return result.data.tokenCreateds.map((token: any) => ({
+      address: token.id,
+      symbol: token.symbol
+    }));
   } catch (error) {
     console.error('Error fetching token addresses and symbols:', error);
-    throw new Error('Failed to fetch token addresses and symbols');
+    throw error;
   }
 }
 
@@ -727,14 +801,66 @@ export async function getTokensByCreator(
   page: number = 1,
   pageSize: number = 20
 ): Promise<PaginatedResponse<Token>> {
+  const skip = (page - 1) * pageSize;
+
+  const query = `
+    query GetTokensByCreator($creator: String!, $first: Int!, $skip: Int!) {
+      tokenCreateds(
+        where: {creator_: {id: $creator}}
+        first: $first
+        skip: $skip
+        orderBy: blockTimestamp
+        orderDirection: desc
+      ) {
+        id
+        name
+        symbol
+        blockTimestamp
+        creator { id }
+      }
+    }
+  `;
+
+  const variables = {
+    creator: creatorAddress.toLowerCase(),
+    first: pageSize,
+    skip: skip
+  };
+
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/tokens/creator/${creatorAddress}`, {
-      params: { page, pageSize }
+    const response = await fetch('http://35.234.119.105:8000/subgraphs/name/likeaser-testnet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables })
     });
-    return response.data;
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error('Failed to fetch tokens by creator');
+    }
+
+    const tokens = result.data.tokenCreateds.map((token: any) => ({
+      id: token.id,
+      address: token.id,
+      name: token.name,
+      symbol: token.symbol,
+      creatorAddress: token.creator.id,
+      createdAt: new Date(parseInt(token.blockTimestamp) * 1000).toISOString(),
+      updatedAt: new Date(parseInt(token.blockTimestamp) * 1000).toISOString(),
+      _count: { liquidityEvents: 0 }
+    }));
+
+    return {
+      data: tokens,
+      totalCount: tokens.length,
+      currentPage: page,
+      totalPages: Math.ceil(tokens.length / pageSize),
+      tokens: []
+    };
   } catch (error) {
     console.error('Error fetching tokens by creator:', error);
-    throw new Error('Failed to fetch tokens by creator');
+    throw error;
   }
 }
 
@@ -755,7 +881,6 @@ export async function getTokenHolders(tokenAddress: string): Promise<TokenHolder
       }
     );
 
-    console.log("Token holders response:", response.data);
 
     if (response.data.status !== '1') {
       console.error('API Error:', response.data.message);
@@ -767,7 +892,6 @@ export async function getTokenHolders(tokenAddress: string): Promise<TokenHolder
       balance: item.value
     }));
 
-    console.log("Processed holders:", holders);
     return holders;
   } catch (error) {
     console.error('Error fetching token holders:', error);

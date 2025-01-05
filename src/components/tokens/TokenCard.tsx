@@ -59,7 +59,8 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
 
   if (isEnded && isTokenWithLiquidity(token)) {
     const liquidityEvent = token.liquidityEvents[0];
-    const uniswapLink = `https://chewyswap.dog/swap/?outputCurrency=${token.address}&chain=shibarium`;
+    // const uniswapLink = `https://chewyswap.dog/swap/?outputCurrency=${token.address}&chain=shibarium`;
+    const uniswapLink = `https://monark.exchange/swap`;
 
     return (
       <div className="w-full max-w-sm p-4 bg-[#3F3F5D] rounded-lg shadow-xl relative">
@@ -82,7 +83,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
             <h3 className="text-lg font-semibold text-white">{token.name}</h3>
             <div className="flex items-center gap-1 text-sm text-gray-400">
               <TagIcon className="h-4 w-4" />
-              <span>Listed on Chewswap</span>
+              <span>Listed on Monark</span>
             </div>
           </div>
         </div>
@@ -114,7 +115,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
             rel="noopener noreferrer"
             className="px-2 py-1 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-medium bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 text-center whitespace-nowrap"
           >
-            Chewyswap
+            Monark
           </a>
           <a
             href={`/token/${token.address}`}
@@ -196,6 +197,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
                 Created: {formatTimestamp(token.createdAt)}
               </span>
             </div>
+            {/* Progress bar removed
             <div className="w-full bg-[#1B1B28] rounded-md">
               <div
                 className="bg-[#5252FF] text-xs font-medium text-[#F9F9F9] text-start p-2 leading-none rounded-md flex justify-between"
@@ -203,9 +205,9 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
               >
                 {" "}
                 <div>45%</div>
-                {/* <div>Launched !</div> */}
               </div>
             </div>
+            */}
           </div>
         </div>
       </div>

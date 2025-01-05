@@ -18,8 +18,8 @@ const HowItWorksPopup: React.FC = () => {
     { icon: LightBulbIcon, text: "Pick a coin you like" },
     { icon: CurrencyDollarIcon, text: "Buy on the bonding curve" },
     { icon: ArrowTrendingUpIcon, text: "Sell anytime for profits/losses" },
-    { icon: BanknotesIcon, text: "Curve reaches 2500 RBTC" },
-    { icon: FireIcon, text: "RBTC deposited in Chewyswap & burned" },
+    { icon: BanknotesIcon, text: "Curve reaches 0.2 RBTC" },
+    { icon: FireIcon, text: "RBTC deposited in Monark & burned" },
   ];
 
   return (

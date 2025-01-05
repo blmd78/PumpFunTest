@@ -7,7 +7,7 @@ import ERC20ABI from '@/abi/ERC20.json';
 import { useCallback } from 'react';
 import { getTokenPool } from './api';
 
-const BONDING_CURVE_MANAGER_ADDRESS = '0x20a4915381Bb975D0A90D61aA9F3F1cbE7da01E1' as `0x${string}`; // Testnet
+const BONDING_CURVE_MANAGER_ADDRESS = '0x580a5EAfEB56C87165914c15eA67b93e57ACeE5f' as `0x${string}`; // Testnet
 const CREATION_FEE = parseUnits('0.0002', 18);
 
 export function useCurrentTokenPrice(poolAddress: `0x${string}`) {
@@ -285,6 +285,7 @@ export const formatAmountV3 = (amount: string, decimals: number = 18) => {
 };
 
 export function formatTimestamp(timestamp: string): string {
+  console.log("timestamp",timestamp);
   const now = new Date();
   const date = new Date(Number(timestamp) * 1000);
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);

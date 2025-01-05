@@ -177,7 +177,7 @@ const ProfilePage: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await getTokensByCreator(creatorAddress, page);
-      setCreatedTokens(response.tokens);
+      setCreatedTokens(response.data);
       setCreatedTokensTotalPages(response.totalPages);
     } catch (error) {
       console.error('Error fetching created tokens:', error);
@@ -223,7 +223,7 @@ const ProfilePage: React.FC = () => {
         image="seo/profile.jpg"
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-xl sm:text-2xl font-bold text-blue-400 mb-6 neon-text">
+        <h1 className="text-xl sm:text-2xl font-bold text-blue-400 mb-6 neon-text ">
           {addressToUse === connectedAddress ? 'Your Profile' : `Profile: ${formatAddressV2(addressToUse)}`}
         </h1>
         

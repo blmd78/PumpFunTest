@@ -497,7 +497,7 @@ const CreateToken: React.FC = () => {
           </div>
           <div className="flex items-center space-x-1 justify-end">
             <span className="text-[10px] sm:text-xs text-[#F9F9F9]">
-              Creation cost: 0.0003 RBTC{" "}
+              Creation cost: 0.0002 RBTC{" "}
             </span>
             <img src={rbtc} alt="rbtc" className="w-8 h-8" />
           </div>
