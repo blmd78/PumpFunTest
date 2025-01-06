@@ -252,7 +252,7 @@ const Home: React.FC = () => {
       <SEO
         title="Create and Trade Memecoins Easily on Likeaser."
         description="The ultimate platform for launching and trading memecoins on Rootstock. Create your own tokens effortlessly and engage in fair, dynamic trading."
-        image="seo/home.jpg"
+        image="seo/home.png"
       />
       <HowItWorksPopup />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
