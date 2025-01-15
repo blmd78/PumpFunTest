@@ -48,8 +48,7 @@ interface TokenDetailProps {
 }
 
 // const TokenDetail: React.FC = () => {
-  const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
-
+const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
   const router = useRouter();
   const { address } = router.query;
   const { address: userAddress } = useAccount();
@@ -125,6 +124,7 @@ interface TokenDetailProps {
     async (page: number) => {
       try {
         const data = await getTokenInfoAndTransactions(address as string, page, 10);
+        console.log("data", data);
         setTokenInfo(data);
         setTransactions(data.transactions.data);
         setTotalTransactionPages(data.transactions.pagination.totalPages);

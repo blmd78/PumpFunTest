@@ -97,6 +97,7 @@ const CreateToken: React.FC = () => {
     async (file: File) => {
       setTokenImage(file);
       const newImageUrl = await uploadToIPFS(file);
+      console.log("newImageUrl", newImageUrl)
       if (newImageUrl) {
         setTokenImageUrl(newImageUrl);
       }
@@ -162,6 +163,7 @@ const CreateToken: React.FC = () => {
         await new Promise((resolve) => setTimeout(resolve, 4000));
 
         console.log("Updating token in backend...");
+        console.log("tokenImageUrl", tokenImageUrl)
         if (tokenAddress && tokenImageUrl) {
           await updateToken(tokenAddress, {
             logo: tokenImageUrl,

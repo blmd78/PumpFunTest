@@ -27,7 +27,7 @@ interface TokenInfoProps {
 
 const TokenInfo: React.FC<TokenInfoProps> = ({ tokenInfo }) => {
   const [showTokenInfo, setShowTokenInfo] = useState(false);
-
+console.log("tokenInfo ", tokenInfo)
   return (
     <div className="bg-[#3F3F5D] p-2 sm:p-3 rounded-lg mb-4 shadow-lg text-[10px] sm:text-xs">
       <div

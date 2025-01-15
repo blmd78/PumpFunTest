@@ -17,12 +17,12 @@ const nextConfig = {
     return [
       {
         source: '/api/subgraph',
-        destination: 'http://35.234.119.105:8000/subgraphs/name/likeaser-testnet'
+        destination: 'http://35.198.140.39:8000/subgraphs/name/likeaser-testnet'
       },
       {
-        source: '/api/:path*',
+        source: '/api/tokens/:path*',
         // destination: '/api/proxy',
-        destination: 'https://likeaserback.onrender.com/api/:path*'
+        destination: 'https://likeaserback.onrender.com/api/tokens/:path*'
       },
     ];
   },

@@ -5,9 +5,9 @@ import { Token, TokenWithLiquidityEvents, PaginatedResponse, LiquidityEvent, Tok
 import { ethers } from 'ethers';
 
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL : '';
 const SUBGRAPH_URL = typeof window === 'undefined' 
-  ? process.env.NEXT_PUBLIC_SUBGRAPH_URL || 'http://35.234.119.105:8000/subgraphs/name/likeaser-testnet'
+  ? process.env.NEXT_PUBLIC_SUBGRAPH_URL || 'http://35.198.140.39:8000/subgraphs/name/likeaser-testnet'
   : '/api/subgraph';
 
 export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedResponse<Token>> {
@@ -434,57 +434,54 @@ export async function getTokenInfoAndTransactions(
       }
     }
   `;
-
-  const variables = {
-    address: address.toLowerCase(),
-    first: transactionPageSize,
-    skip: skip
-  };
-
+  console.log("start fetching token info and transactions")
   try {
-    const response = await fetch(SUBGRAPH_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query,
-        variables
+    const checksumAddress = ethers.utils.getAddress(address);
+    console.log("url", `${API_BASE_URL}/api/tokens/address/${checksumAddress}`)
+    // 2. Parallel requests to both APIs
+    const [graphqlResponse, metadataResponse] = await Promise.all([
+      // Get blockchain data from subgraph
+      fetch(SUBGRAPH_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query,
+          variables: { address: address.toLowerCase(), first: transactionPageSize, skip }
+        }),
       }),
-    });
-
-    const result = await response.json();
-    console.log("result", result)
-    if (result.errors) {
-      throw new Error('Failed to fetch token info');
+      
+      // Get metadata from your backend
+      fetch(`${API_BASE_URL}/api/tokens/address/${checksumAddress}`)  // Using rewrite to backend
+    ]);
+    console.log("metadataResponse", metadataResponse)
+    const [{ data }, metadata] = await Promise.all([
+      graphqlResponse.json(),
+      metadataResponse.json()
+    ]);
+    console.log("token metadata", metadata)
+    if (!data.tokenCreated) {
+      throw new Error('Token not found');
     }
 
-    const tokenData = result.data.tokenCreated;
-    if (!tokenData) {
-    throw new Error('Token not found');
-  }
-  const transactions = result.data.transactions || []
-
+    // 3. Combine the data
     return {
-      id: tokenData.id,
-      address: tokenData.id,
-      name: tokenData.name,
-      symbol: tokenData.symbol,
-      creatorAddress: '', // This might need to come from a different query
-      logo: '', // This would come from your MongoDB metadata
-      description: '', // This would come from your MongoDB metadata
-      createdAt: new Date(parseInt(tokenData.blockTimestamp) * 1000).toISOString(),
-      updatedAt: new Date(parseInt(tokenData.blockTimestamp) * 1000).toISOString(),
-      _count: {
-        liquidityEvents: 0
-      },
-      youtube: "",
-      discord: "",
-      twitter: "https://x.com/MonarkExchange",
-      website: "https://monark.exchange",
-      telegram: "",
+      id: data.tokenCreated.id,
+      address: data.tokenCreated.id,
+      name: data.tokenCreated.name,
+      symbol: data.tokenCreated.symbol,
+      creatorAddress: '', 
+      logo: metadata.logo || '',        // From backend
+      description: metadata.token.description || '', // From backend
+      createdAt: new Date(parseInt(data.tokenCreated.blockTimestamp) * 1000).toISOString(),
+      updatedAt: new Date(parseInt(data.tokenCreated.blockTimestamp) * 1000).toISOString(),
+      _count: { liquidityEvents: 0 },
+      youtube: metadata.token.socialLinks.youtube || "",
+      discord: metadata.token.socialLinks.discord || "",
+      twitter: metadata.token.socialLinks.twitter || "",
+      website: metadata.token.socialLinks.website || "",
+      telegram: metadata.token.socialLinks.telegram || "",
       transactions: {
-        data: transactions.map((tx: any) => ({
+        data: data.transactions.map((tx: any) => ({
           id: tx.id,
           type: tx.type,
           senderAddress: tx.senderAddress,
@@ -500,8 +497,8 @@ export async function getTokenInfoAndTransactions(
         pagination: {
           currentPage: transactionPage,
           pageSize: transactionPageSize,
-          totalCount: transactions.length,
-          totalPages: Math.ceil(transactions.length / transactionPageSize)
+          totalCount: data.transactions.length,
+          totalPages: Math.ceil(data.transactions.length / transactionPageSize)
         }
       }
     };
@@ -626,8 +623,8 @@ export async function updateToken(
   }
 ): Promise<Token> {
   try {
-    // const response = await axios.patch(`${API_BASE_URL}/api/tokens/update/${address}`, data);
-    const response = await axios.patch(`/api/tokens/update/${address}`, data);
+    const response = await axios.patch(`${API_BASE_URL}/api/tokens/update/${address}`, data);
+    // const response = await axios.patch(`/api/tokens/update/${address}`, data);
     return response.data;
   } catch (error) {
     console.error('Error updating token:', error);
