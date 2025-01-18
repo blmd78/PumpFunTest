@@ -10,7 +10,7 @@ interface SortOptionsProps {
 const sortOptionMapping: { [key: string]: SortOption } = {
   'All': 'all',
   //'Creation Time': 'recentCreated',
-  //'Ended': 'ended',
+  'Ended': 'ended',
   //'Bomper': 'bomper'
 };
 

@@ -18,6 +18,7 @@ export interface LiquidityEvent {
     description: string;
     createdAt: string;
     updatedAt: string;
+    migrated?: boolean;
     _count: {
       liquidityEvents: number;
     };

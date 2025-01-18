@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -16,6 +16,8 @@ import {
 } from "@/utils/blockchainUtils";
 import Spinner from "@/components/ui/Spinner";
 import { useRouter } from "next/router";
+import { getTokenPool } from "@/utils/api";
+import { ethers } from "ethers";
 
 interface TokenCardProps {
   token: Token | TokenWithLiquidityEvents;
@@ -25,10 +27,19 @@ interface TokenCardProps {
 const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const liquidityPoolAddress = useRef<`0x${string}` | undefined>();
   const [currentLiquidity, setCurrentLiquidity] = useState<string>("0");
   const tokenAddress = token.address as `0x${string}`;
-  const { data: liquidityData } = useTokenLiquidity(tokenAddress);
-
+  console.log("token", token);
+  useEffect(() => {
+    const fetchPool = async () => {
+      liquidityPoolAddress.current = await getTokenPool(tokenAddress) as `0x${string}`;
+    };
+    fetchPool();
+  }, [tokenAddress]);
+  
+  const { data: liquidityData } = useTokenLiquidity(liquidityPoolAddress.current as `0x${string}`);
+  
   useEffect(() => {
     if (liquidityData && liquidityData[1]) {
       setCurrentLiquidity(liquidityData[1].toString());
@@ -61,6 +72,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
     const liquidityEvent = token.liquidityEvents[0];
     // const uniswapLink = `https://chewyswap.dog/swap/?outputCurrency=${token.address}&chain=shibarium`;
     const uniswapLink = `https://monark.exchange/swap`;
+    // console.log("timestamped ", token.name, liquidityEvent.timestamp, formatTimestamp(liquidityEvent.timestamp));
 
     return (
       <div className="w-full max-w-sm p-4 bg-[#3F3F5D] rounded-lg shadow-xl relative">
@@ -140,12 +152,14 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
             <Spinner size="medium" />
           </div>
         )}
-        <div className="h-40 sm:h-48 overflow-hidden p-4">
-          <img
-            src={token.logo}
-            alt={token.name}
-            className="w-full h-full object-cover rounded-lg"
-          />
+        <div className="h-40 sm:h-48 overflow-hidden p-4 flex items-center justify-center">
+          <div className="relative w-32 h-32 sm:w-40 sm:h-40">
+            <img
+              src={token.logo}
+              alt={token.name}
+              className="w-full h-full object-contain"
+            />
+          </div>
         </div>
         <div className="p-4">
           <div className="flex items-center gap-3 mb-3">
@@ -197,17 +211,17 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
                 Created: {formatTimestamp(token.createdAt)}
               </span>
             </div>
-            {/* Progress bar removed
-            <div className="w-full bg-[#1B1B28] rounded-md">
+            {/* Progress bar removed */}
+            {liquidityData && <div className="w-full bg-[#1B1B28] rounded-md">
               <div
-                className="bg-[#5252FF] text-xs font-medium text-[#F9F9F9] text-start p-2 leading-none rounded-md flex justify-between"
-                style={{ width: "45%" }}
+                className="bg-[#5252FF] text-xs font-medium text-[#F9F9F9] text-start py-2 leading-none rounded-md flex justify-between"
+                style={{ width: `${Number(ethers.utils.formatEther(liquidityData[1])) / 0.2 * 100}%` }}
               >
                 {" "}
-                <div>45%</div>
+                <div className="px-2">{formatAmountV2(liquidityData[1].toString())}</div>
               </div>
-            </div>
-            */}
+            </div>}
+           
           </div>
         </div>
       </div>

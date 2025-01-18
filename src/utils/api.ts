@@ -15,7 +15,17 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
   console.log("getAllTokens")
   const query = `
     query GetAllTokens($first: Int, $skip: Int) {
-      tokenCreateds(first: $first, skip: $skip) {
+      tokenCreateds(
+        first: $first
+        skip: $skip
+        orderBy: blockTimestamp
+        orderDirection: desc
+        where: {
+          pool_: {
+            migrated: false
+          }
+        }
+      ) {
         id
         name
         symbol
@@ -24,6 +34,9 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
         blockTimestamp
         transactionHash
         creator{id}
+        pool {
+          migrated
+        }
       }
     }
   `;
@@ -34,7 +47,8 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
   };
 
   try {
-    const response = await fetch(SUBGRAPH_URL, {
+    // Get blockchain data from subgraph
+    const graphqlResponse = await fetch(SUBGRAPH_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -45,7 +59,7 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
       }),
     });
 
-    const result = await response.json();
+    const result = await graphqlResponse.json();
     console.log("result", result)
     if (result.errors) {
       console.error('GraphQL errors:', result.errors);
@@ -58,21 +72,56 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
       };
     }
 
-    const tokens = result.data.tokenCreateds.map((token: any) => ({
-      id: token.id,
-      address: token.id,
-      name: token.name,
-      symbol: token.symbol,
-      creatorAddress: token.creator.id,
-      createdAt: token.blockTimestamp,
-      updatedAt: token.blockTimestamp,
+    // Transform subgraph data
+    const tokens = await Promise.all(result.data.tokenCreateds.map(async (token: any) => {
+      try {
+        // Fetch metadata for each token
+        const checksumAddress = ethers.utils.getAddress(token.id);
+        const metadataResponse = await fetch(`${API_BASE_URL}/api/tokens/address/${checksumAddress}`);
+        const metadata = await metadataResponse.json();
+
+        return {
+          id: token.id,
+          address: token.id,
+          name: token.name,
+          symbol: token.symbol,
+          creatorAddress: token.creator.id,
+          logo: metadata.token.logo || '',
+          description: metadata.token.description || '',
+          createdAt: token.blockTimestamp,
+          updatedAt: token.blockTimestamp,
+          migrated: token.pool.migrated,
+          _count: {
+            liquidityEvents: 0
+          }
+        };
+      } catch (error) {
+        console.error(`Error fetching metadata for token ${token.id}:`, error);
+        // Return token without metadata if fetch fails
+        return {
+          id: token.id,
+          address: token.id,
+          name: token.name,
+          symbol: token.symbol,
+          creatorAddress: token.creator.id,
+          logo: '',
+          description: '',
+          createdAt: token.blockTimestamp,
+          updatedAt: token.blockTimestamp,
+          migrated: token.pool.migrated,
+          _count: {
+            liquidityEvents: 0
+          }
+        };
+      }
     }));
+
     return {
       data: tokens,
-      totalCount: tokens.length, // Adjust this if you have a way to get the total count
+      totalCount: tokens.length,
       currentPage: page,
-      totalPages: Math.ceil(tokens.length / pageSize), // Adjust this if you have a way to get the total pages
-      tokens: [] // This field seems redundant based on your interface
+      totalPages: Math.ceil(tokens.length / pageSize),
+      tokens: []
     };
   } catch (error) {
     console.error('Error fetching tokens:', error);
@@ -250,10 +299,93 @@ export async function searchTokens(
 }
 
 export async function getTokensWithLiquidity(page: number = 1, pageSize: number = 20): Promise<PaginatedResponse<TokenWithLiquidityEvents>> {
-  const response = await axios.get(`${API_BASE_URL}/api/tokens/with-liquidityEvent`, {
-    params: { page, pageSize }
-  });
-  return response.data;
+  const skip = (page - 1) * pageSize;
+  
+  const query = `
+    query GetTokensWithLiquidity($first: Int, $skip: Int) {
+      tokenCreateds(
+        first: $first
+        skip: $skip
+        orderBy: blockTimestamp
+        orderDirection: desc
+        where: {
+          pool_: {
+            migrated: true
+          }
+        }
+      ) {
+        id
+        name
+        symbol
+        pool
+        blockNumber
+        blockTimestamp
+        transactionHash
+        creator{id}
+        pool {
+          migrated
+          migration{
+            id
+            amount0
+            amount1
+            timestamp
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    first: pageSize,
+    skip: skip
+  };
+
+  try {
+    const response = await fetch(SUBGRAPH_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (result.errors) {
+      throw new Error('Failed to fetch tokens with liquidity');
+    }
+    
+    const tokens = result.data.tokenCreateds.map((token: any) => ({
+      id: token.id,
+      address: token.id,
+      name: token.name,
+      symbol: token.symbol,
+      creatorAddress: token.creator.id,
+      createdAt: token.blockTimestamp,
+      updatedAt: token.blockTimestamp,
+      migrated: token.pool.migrated,
+      liquidityEvents: [{
+        id: token.pool.migration.id,
+        ethAmount: token.pool.migration.amount0 < token.pool.migration.amount1 ? token.pool.migration.amount0 : token.pool.migration.amount1,
+        tokenAmount: token.pool.migration.amount0 > token.pool.migration.amount1 ? token.pool.migration.amount0 : token.pool.migration.amount1,
+        timestamp: token.pool.migration.timestamp
+      }]
+    }));
+
+    return {
+      data: tokens,
+      totalCount: tokens.length,
+      currentPage: page,
+      totalPages: Math.ceil(tokens.length / pageSize),
+      tokens: []
+    };
+  } catch (error) {
+    console.error('Error fetching tokens with liquidity:', error);
+    throw error;
+  }
 }
 
 export async function getTokenByAddress(address: string): Promise<Token> {
@@ -470,7 +602,7 @@ export async function getTokenInfoAndTransactions(
       name: data.tokenCreated.name,
       symbol: data.tokenCreated.symbol,
       creatorAddress: '', 
-      logo: metadata.logo || '',        // From backend
+      logo: metadata.token.logo || '',        // From backend
       description: metadata.token.description || '', // From backend
       createdAt: new Date(parseInt(data.tokenCreated.blockTimestamp) * 1000).toISOString(),
       updatedAt: new Date(parseInt(data.tokenCreated.blockTimestamp) * 1000).toISOString(),

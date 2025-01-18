@@ -158,7 +158,7 @@ const Home: React.FC = () => {
         }
       }
 
-      // console.log('Fetched tokens:', fetchedTokens);
+      console.log('Fetched tokens:', fetchedTokens);
 
       const adjustedTokens: PaginatedResponse<
         Token | TokenWithLiquidityEvents

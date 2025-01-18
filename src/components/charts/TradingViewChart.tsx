@@ -35,7 +35,12 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
   }, [liquidityEvents]);
 
   useEffect(() => {
-    if (chartContainerRef.current && data.length >= 2 && showUniswapInfo === false) {
+    if (chartContainerRef.current && data.length >= 1 && showUniswapInfo === false) {
+      const chartData = [...data];
+      if (chartData.length > 0) {
+        chartData[0] = { ...chartData[0], open: 0.000000000017 };
+      }
+
       const newChart: IChartApi = createChart(chartContainerRef.current, {
         width: chartContainerRef.current.clientWidth,
         height: 500,
@@ -84,7 +89,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
         wickDownColor: '#ef5350'
       });
 
-      const enhancedChartData = enhanceSmallCandles(data);
+      const enhancedChartData = enhanceSmallCandles(chartData);
       candleSeries.setData(enhancedChartData.map(item => ({
         time: item.time as Time,
         open: item.open,
@@ -193,7 +198,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
     );
   }
 
-  if (data.length < 2) {
+  if (data.length < 1) {
     return (
       <div className="w-full h-[500px] bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center">
         <p className="text-white text-lg">Not enough data to display chart</p>
@@ -208,6 +213,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
 
 function enhanceSmallCandles(data: ChartDataPoint[]): ChartDataPoint[] {
   const minCandleSize = 1e-9;
+  console.log("enhanceSmallCandles data",data);
   return data.map(item => {
     const bodySize = Math.abs(item.open - item.close);
     if (bodySize < minCandleSize) {
