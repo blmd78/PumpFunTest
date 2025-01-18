@@ -27,18 +27,19 @@ interface TokenCardProps {
 const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const liquidityPoolAddress = useRef<`0x${string}` | undefined>();
+  const [liquidityPoolAddress, setLiquidityPoolAddress] = useState<`0x${string}` | undefined>();
   const [currentLiquidity, setCurrentLiquidity] = useState<string>("0");
   const tokenAddress = token.address as `0x${string}`;
   console.log("token", token);
   useEffect(() => {
     const fetchPool = async () => {
-      liquidityPoolAddress.current = await getTokenPool(tokenAddress) as `0x${string}`;
+      const pool = await getTokenPool(tokenAddress) as `0x${string}`;
+      setLiquidityPoolAddress(pool);
     };
     fetchPool();
   }, [tokenAddress]);
   
-  const { data: liquidityData } = useTokenLiquidity(liquidityPoolAddress.current as `0x${string}`);
+  const { data: liquidityData } = useTokenLiquidity(liquidityPoolAddress as `0x${string}`);
   
   useEffect(() => {
     if (liquidityData && liquidityData[1]) {
