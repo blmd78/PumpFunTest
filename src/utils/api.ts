@@ -544,6 +544,7 @@ export async function getTokenInfoAndTransactions(
         blockNumber
         blockTimestamp
         transactionHash
+        creator{id}
       }
       transactions: transactions(
         first: $first
@@ -601,11 +602,11 @@ export async function getTokenInfoAndTransactions(
       address: data.tokenCreated.id,
       name: data.tokenCreated.name,
       symbol: data.tokenCreated.symbol,
-      creatorAddress: '', 
+      creatorAddress: data.tokenCreated.creator.id, 
       logo: metadata.token.logo || '',        // From backend
       description: metadata.token.description || '', // From backend
-      createdAt: new Date(parseInt(data.tokenCreated.blockTimestamp) * 1000).toISOString(),
-      updatedAt: new Date(parseInt(data.tokenCreated.blockTimestamp) * 1000).toISOString(),
+      createdAt: data.tokenCreated.blockTimestamp,
+      updatedAt: data.tokenCreated.blockTimestamp,
       _count: { liquidityEvents: 0 },
       youtube: metadata.token.socialLinks.youtube || "",
       discord: metadata.token.socialLinks.discord || "",

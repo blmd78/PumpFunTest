@@ -30,7 +30,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
   const [liquidityPoolAddress, setLiquidityPoolAddress] = useState<`0x${string}` | undefined>();
   const [currentLiquidity, setCurrentLiquidity] = useState<string>("0");
   const tokenAddress = token.address as `0x${string}`;
-  console.log("token", token);
+  // console.log("token", token);
   useEffect(() => {
     const fetchPool = async () => {
       const pool = await getTokenPool(tokenAddress) as `0x${string}`;

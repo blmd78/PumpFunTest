@@ -124,7 +124,6 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
     async (page: number) => {
       try {
         const data = await getTokenInfoAndTransactions(address as string, page, 10);
-        console.log("data", data);
         setTokenInfo(data);
         setTransactions(data.transactions.data);
         setTotalTransactionPages(data.transactions.pagination.totalPages);
