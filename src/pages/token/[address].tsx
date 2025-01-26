@@ -119,14 +119,37 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
 
   const [liquidityEvents, setLiquidityEvents] = useState<any>(null);
 
+  // Add new state for slippage
+  const [slippage, setSlippage] = useState<string>('0.5');
+  const [showSlippageSettings, setShowSlippageSettings] = useState(false);
+
+  const commonSlippageValues = ['0.1', '0.5', '1.0'];
+
+  // Add handler for slippage change
+  const handleSlippageChange = (value: string) => {
+    // Validate input to ensure it's a valid number between 0 and 25
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) {
+      setSlippage('0');
+    } else if (!isNaN(numValue) && numValue >= 0) {
+      if (numValue <= 25) {
+        setSlippage(value);
+      } else {
+        setSlippage('25');
+      }
+    }
+  };
 
   const fetchTokenData = useCallback(
     async (page: number) => {
       try {
+        console.log("fetchTokenData")
         const data = await getTokenInfoAndTransactions(address as string, page, 10);
+        console.log("data", data)
         setTokenInfo(data);
         setTransactions(data.transactions.data);
         setTotalTransactionPages(data.transactions.pagination.totalPages);
+        console.log("transactions", transactions)
       } catch (error) {
         console.error('Error fetching token data:', error);
       }
@@ -176,6 +199,7 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
 
   const fetchAllData = useCallback(async () => {
     if (address) {
+      console.log("fetchAllData")
       await fetchTokenData(transactionPage);
       await fetchHistoricalPriceData();
       refetchCurrentPrice();
@@ -284,6 +308,13 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
     }
 
     const amount = parseUnits(fromToken.amount, 18);
+    const slippageMultiplier = 1 - (parseFloat(slippage) / 100);
+    const minReturn = isSwapped 
+      ? sellReturnData ? BigInt(Math.floor(Number(sellReturnData) * slippageMultiplier)) : BigInt(0)
+      : buyReturnData ? BigInt(Math.floor(Number(buyReturnData) * slippageMultiplier)) : BigInt(0);
+
+    console.log("minReturn", minReturn)
+
     setIsTransacting(true);
 
     try {
@@ -292,10 +323,10 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
         if (!isApproved) {
           txHash = await approveTokens(address as `0x${string}`, poolAddress.current as `0x${string}`);
         } else {
-          txHash = await sellTokens(poolAddress.current as `0x${string}`, amount);
+          txHash = await sellTokens(poolAddress.current as `0x${string}`, amount, minReturn);
         }
       } else {
-        txHash = await buyTokens(poolAddress.current as `0x${string}`, amount);
+        txHash = await buyTokens(poolAddress.current as `0x${string}`, amount, minReturn);
       }
       console.log('Transaction hash:', txHash);
       setTransactionHash(txHash);
@@ -304,7 +335,7 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
       toast.error('Transaction failed to initiate: ' + (error as Error).message);
       setIsTransacting(false);
     }
-  }, [address, fromToken.amount, userAddress, isSwapped, isApproved, approveTokens, sellTokens, buyTokens]);
+  }, [address, fromToken.amount, userAddress, isSwapped, isApproved, approveTokens, sellTokens, buyTokens, slippage, buyReturnData, sellReturnData]);
 
   useEffect(() => {
     if (!isWaiting && !transactionError) {
@@ -453,6 +484,49 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
                   <span className="ml-2 text-xs sm:text-sm text-[#B3AEAE] whitespace-nowrap">{toToken.symbol}</span>
                 </div>
               </div>
+              <div className="mb-4">
+                <div className="flex justify-between items-center">
+                  <button 
+                    onClick={() => setShowSlippageSettings(!showSlippageSettings)}
+                    className="text-xs text-[#B3AEAE] hover:text-white flex items-center gap-1"
+                  >
+                    Slippage tolerance: {slippage}%
+                  </button>
+                </div>
+                
+                {showSlippageSettings && (
+                  <div className="mt-2 p-3 bg-[#2D2D44] rounded-lg">
+                    <div className="flex gap-2 mb-2">
+                      {commonSlippageValues.map((value) => (
+                        <button
+                          key={value}
+                          onClick={() => handleSlippageChange(value)}
+                          className={`px-3 py-1 rounded text-xs ${
+                            slippage === value 
+                              ? 'bg-[#5252FF] text-white' 
+                              : 'bg-[#3F3F5D] text-[#B3AEAE] hover:bg-[#4A4A6A]'
+                          }`}
+                        >
+                          {value}%
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={slippage}
+                        onChange={(e) => handleSlippageChange(e.target.value)}
+                        className="w-20 px-2 py-1 text-xs bg-[#3F3F5D] border border-[#5252FF] rounded outline-none text-white"
+                        placeholder="Custom"
+                        step="0.1"
+                        min="0"
+                     
+                      />
+                      <span className="text-xs text-[#B3AEAE]">%</span>
+                    </div>
+                  </div>
+                )}
+              </div>
               <button
                 onClick={handleAction}
                 className="w-full bg-[#5252FF] border border-white text-white py-3 rounded hover:bg-blue-600 transition-colors disabled:opacity-50 text-sm sm:text-base"
@@ -533,10 +607,10 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
 //simple server-side rendering  just to get token info for seo - nothing more - nothing else  
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { address } = context.params as { address: string };
-
+console.log("getServerSideProps")
   try {
     const tokenInfo = await getTokenInfoAndTransactions(address, 1, 1);
-
+console.log("tokenInfo", tokenInfo)
     return {
       props: {
         initialTokenInfo: tokenInfo,

@@ -7,7 +7,7 @@ import ERC20ABI from '@/abi/ERC20.json';
 import { useCallback } from 'react';
 import { getTokenPool } from './api';
 
-const BONDING_CURVE_MANAGER_ADDRESS = '0x580a5EAfEB56C87165914c15eA67b93e57ACeE5f' as `0x${string}`; // Testnet
+const BONDING_CURVE_MANAGER_ADDRESS = '0x2a0B34a43b477fA9355AC2c8e54Da3c57067DDF4' as `0x${string}`; // Testnet
 const CREATION_FEE = parseUnits('0.0002', 18);
 
 export function useCurrentTokenPrice(poolAddress: `0x${string}`) {
@@ -198,13 +198,14 @@ export function useCreateToken() {
 export function useBuyTokens() {
   const { writeContractAsync, data, error, isPending } = useWriteContract();
 
-  const buyTokens = async (poolAddress: `0x${string}`, ethAmount: bigint) => {
+  const buyTokens = async (poolAddress: `0x${string}`, ethAmount: bigint, 
+    minReturn: bigint = BigInt(0), deadline: bigint = BigInt(maxUint256)) => {
     try {     
       const result = await writeContractAsync({
         address: poolAddress as `0x${string}`,
         abi: LiquidityPoolABI,
         functionName: 'buyToken',
-        args: [],
+        args: [minReturn, deadline],
         value: ethAmount,
       });
       return result;
@@ -220,13 +221,14 @@ export function useBuyTokens() {
 export function useSellTokens() {
   const { writeContractAsync, data, error, isPending } = useWriteContract();
 
-  const sellTokens = async (poolAddress: `0x${string}`, amount: bigint) => {
+  const sellTokens = async (poolAddress: `0x${string}`, amount: bigint, 
+    minReturn: bigint = BigInt(0), deadline: bigint = BigInt(maxUint256)) => {
     try {
       const result = await writeContractAsync({
         address: poolAddress as `0x${string}`,
         abi: LiquidityPoolABI,
         functionName: 'sellToken',
-        args: [amount],
+        args: [amount, minReturn, deadline],
       });
       return result;
     } catch (error) {

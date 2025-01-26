@@ -1,619 +1,502 @@
 [
     {
+        "type": "constructor",
         "inputs": [
             {
-                "internalType": "address",
                 "name": "_devAddress",
-                "type": "address"
+                "type": "address",
+                "internalType": "address"
             },
             {
-                "internalType": "address",
-                "name": "_daoAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_algebraInitializer",
-                "type": "address"
+                "name": "_migrator",
+                "type": "address",
+                "internalType": "address"
             }
         ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
+        "stateMutability": "nonpayable"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            }
-        ],
-        "name": "OwnableInvalidOwner",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "OwnableUnauthorizedAccount",
-        "type": "error"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "newInitializer",
-                "type": "address"
-            }
-        ],
-        "name": "AlgebraInitializerUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "newCost",
-                "type": "uint256"
-            }
-        ],
-        "name": "CreationCostUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "newBuyTax",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "newSellTax",
-                "type": "uint256"
-            }
-        ],
-        "name": "DefaultTaxesUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "poolAddress",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "newThreshold",
-                "type": "uint256"
-            }
-        ],
-        "name": "MigrationThresholdUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "poolAddress",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "bool",
-                "name": "enabled",
-                "type": "bool"
-            }
-        ],
-        "name": "MigrationToggled",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "previousOwner",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
-        "name": "OwnershipTransferred",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "poolAddress",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "newBuyTax",
-                "type": "uint256"
-            }
-        ],
-        "name": "PoolBuyTaxUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "poolAddress",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "newSellTax",
-                "type": "uint256"
-            }
-        ],
-        "name": "PoolSellTaxUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "name",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "symbol",
-                "type": "string"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "poolAddress",
-                "type": "address"
-            }
-        ],
-        "name": "TokenCreated",
-        "type": "event"
-    },
-    {
-        "inputs": [],
-        "name": "DAO_RETRIBUTION_PERCENTAGE",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
+        "type": "function",
         "name": "INITIAL_TOKEN_SUPPLY",
+        "inputs": [],
         "outputs": [
             {
-                "internalType": "uint256",
                 "name": "",
-                "type": "uint256"
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "stateMutability": "view"
     },
     {
-        "inputs": [],
+        "type": "function",
         "name": "MAX_TOTAL_TAX",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [],
-        "name": "algebraPoolInitializer",
         "outputs": [
             {
-                "internalType": "address",
                 "name": "",
-                "type": "address"
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "stateMutability": "view"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "allTokens",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "liquidityPoolAddress",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "name",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "symbol",
-                "type": "string"
-            }
-        ],
+        "type": "function",
         "name": "createToken",
-        "outputs": [
+        "inputs": [
             {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+            },
+            {
+                "name": "symbol",
+                "type": "string",
+                "internalType": "string"
             }
         ],
-        "stateMutability": "payable",
-        "type": "function"
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "payable"
     },
     {
-        "inputs": [],
+        "type": "function",
         "name": "creationCost",
+        "inputs": [],
         "outputs": [
             {
-                "internalType": "uint256",
                 "name": "",
-                "type": "uint256"
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "stateMutability": "view"
     },
     {
-        "inputs": [],
-        "name": "daoAddress",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
+        "type": "function",
         "name": "defaultBuyTax",
+        "inputs": [],
         "outputs": [
             {
-                "internalType": "uint256",
                 "name": "",
-                "type": "uint256"
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "stateMutability": "view"
     },
     {
-        "inputs": [],
+        "type": "function",
         "name": "defaultMigrationThreshold",
+        "inputs": [],
         "outputs": [
             {
-                "internalType": "uint256",
                 "name": "",
-                "type": "uint256"
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "stateMutability": "view"
     },
     {
-        "inputs": [],
+        "type": "function",
         "name": "defaultSellTax",
+        "inputs": [],
         "outputs": [
             {
-                "internalType": "uint256",
                 "name": "",
-                "type": "uint256"
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "stateMutability": "view"
     },
     {
-        "inputs": [],
+        "type": "function",
         "name": "devAddress",
+        "inputs": [],
         "outputs": [
             {
-                "internalType": "address",
                 "name": "",
-                "type": "address"
+                "type": "address",
+                "internalType": "address"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "stateMutability": "view"
     },
     {
+        "type": "function",
+        "name": "forceMigration",
+        "inputs": [
+            {
+                "name": "poolAddress",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "migrator",
         "inputs": [],
-        "name": "getAllTokens",
         "outputs": [
             {
-                "components": [
-                    {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "liquidityPoolAddress",
-                        "type": "address"
-                    }
-                ],
-                "internalType": "struct TokenFactory.TokenInfo[]",
                 "name": "",
-                "type": "tuple[]"
+                "type": "address",
+                "internalType": "address"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "stateMutability": "view"
     },
     {
-        "inputs": [],
-        "name": "getTotalTokensCreated",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
+        "type": "function",
         "name": "owner",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
         "name": "renounceOwnership",
+        "inputs": [],
         "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "stateMutability": "nonpayable"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "poolAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "bool",
-                "name": "enable",
-                "type": "bool"
-            }
-        ],
-        "name": "togglePoolMigration",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
+        "type": "function",
         "name": "tokenByName",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
-                "internalType": "address",
                 "name": "",
-                "type": "address"
+                "type": "string",
+                "internalType": "string"
             }
         ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
         "name": "tokenToPool",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
         "outputs": [
             {
-                "internalType": "address",
                 "name": "",
-                "type": "address"
+                "type": "address",
+                "internalType": "address"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "stateMutability": "view"
     },
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
+        "type": "function",
         "name": "transferOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "newInitializer",
-                "type": "address"
+                "name": "newOwner",
+                "type": "address",
+                "internalType": "address"
             }
         ],
-        "name": "updateAlgebraInitializer",
         "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "stateMutability": "nonpayable"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "newCost",
-                "type": "uint256"
-            }
-        ],
+        "type": "function",
         "name": "updateCreationCost",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "newBuyTax",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "newSellTax",
-                "type": "uint256"
+                "name": "newCost",
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
         "name": "updateDefaultTaxes",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "poolAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
                 "name": "newBuyTax",
-                "type": "uint256"
-            }
-        ],
-        "name": "updatePoolBuyTax",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "poolAddress",
-                "type": "address"
+                "type": "uint256",
+                "internalType": "uint256"
             },
             {
-                "internalType": "uint256",
-                "name": "newThreshold",
-                "type": "uint256"
-            }
-        ],
-        "name": "updatePoolMigrationThreshold",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "poolAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
                 "name": "newSellTax",
-                "type": "uint256"
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
-        "name": "updatePoolSellTax",
         "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "updateMigrator",
+        "inputs": [
+            {
+                "name": "newMigrator",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "updatePoolBuyTax",
+        "inputs": [
+            {
+                "name": "poolAddress",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "newBuyTax",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "updatePoolMigrationThreshold",
+        "inputs": [
+            {
+                "name": "poolAddress",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "newThreshold",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "updatePoolSellTax",
+        "inputs": [
+            {
+                "name": "poolAddress",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "newSellTax",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "event",
+        "name": "AlgebraInitializerUpdated",
+        "inputs": [
+            {
+                "name": "newInitializer",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "CreationCostUpdated",
+        "inputs": [
+            {
+                "name": "newCost",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "DefaultTaxesUpdated",
+        "inputs": [
+            {
+                "name": "newBuyTax",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "newSellTax",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "MigrationThresholdUpdated",
+        "inputs": [
+            {
+                "name": "poolAddress",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "newThreshold",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "OwnershipTransferred",
+        "inputs": [
+            {
+                "name": "previousOwner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "newOwner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "PoolBuyTaxUpdated",
+        "inputs": [
+            {
+                "name": "poolAddress",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "newBuyTax",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "PoolSellTaxUpdated",
+        "inputs": [
+            {
+                "name": "poolAddress",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "newSellTax",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "TokenCreated",
+        "inputs": [
+            {
+                "name": "tokenAddress",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "indexed": false,
+                "internalType": "string"
+            },
+            {
+                "name": "symbol",
+                "type": "string",
+                "indexed": false,
+                "internalType": "string"
+            },
+            {
+                "name": "poolAddress",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "error",
+        "name": "OwnableInvalidOwner",
+        "inputs": [
+            {
+                "name": "owner",
+                "type": "address",
+                "internalType": "address"
+            }
+        ]
+    },
+    {
+        "type": "error",
+        "name": "OwnableUnauthorizedAccount",
+        "inputs": [
+            {
+                "name": "account",
+                "type": "address",
+                "internalType": "address"
+            }
+        ]
     }
 ]

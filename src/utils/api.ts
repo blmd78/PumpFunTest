@@ -557,7 +557,7 @@ export async function getTokenInfoAndTransactions(
         type
         senderAddress
         token{id}
-        ethAmountAfterTax
+        ethAmount
         tokenAmount
         tokenPrice
         txHash
@@ -595,7 +595,7 @@ export async function getTokenInfoAndTransactions(
     if (!data.tokenCreated) {
       throw new Error('Token not found');
     }
-
+    console.log("here")
     // 3. Combine the data
     return {
       id: data.tokenCreated.id,
@@ -603,23 +603,23 @@ export async function getTokenInfoAndTransactions(
       name: data.tokenCreated.name,
       symbol: data.tokenCreated.symbol,
       creatorAddress: data.tokenCreated.creator.id, 
-      logo: metadata.token.logo || '',        // From backend
-      description: metadata.token.description || '', // From backend
+      logo: metadata && metadata.token && metadata.token.logo ? metadata.token.logo : '',        // From backend
+      description: metadata && metadata.token && metadata.token.description ? metadata.token.description : '', // From backend
       createdAt: data.tokenCreated.blockTimestamp,
       updatedAt: data.tokenCreated.blockTimestamp,
       _count: { liquidityEvents: 0 },
-      youtube: metadata.token.socialLinks.youtube || "",
-      discord: metadata.token.socialLinks.discord || "",
-      twitter: metadata.token.socialLinks.twitter || "",
-      website: metadata.token.socialLinks.website || "",
-      telegram: metadata.token.socialLinks.telegram || "",
+      youtube: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.youtube ? metadata.token.socialLinks.youtube : "",
+      discord: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.discord ? metadata.token.socialLinks.discord : "",
+      twitter: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.twitter ? metadata.token.socialLinks.twitter : "",
+      website: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.website ? metadata.token.socialLinks.website : "",
+      telegram: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.telegram ? metadata.token.socialLinks.telegram : "",
       transactions: {
         data: data.transactions.map((tx: any) => ({
           id: tx.id,
           type: tx.type,
           senderAddress: tx.senderAddress,
           recipientAddress: tx.token.id,
-          ethAmount: tx.ethAmountAfterTax,
+          ethAmount: tx.ethAmount,
           tokenAmount: tx.tokenAmount,
           tokenPrice: tx.tokenPrice,
           txHash: tx.txHash,
@@ -786,7 +786,7 @@ export async function getTransactionsByAddress(
           type
           senderAddress
           token{id}
-          ethAmountAfterTax
+          ethAmount
           tokenAmount
           tokenPrice
           txHash
@@ -835,7 +835,7 @@ export async function getTransactionsByAddress(
         type: tx.type,
         senderAddress: tx.senderAddress,
         recipientAddress: tx.token.id,
-        ethAmount: tx.ethAmountAfterTax,
+        ethAmount: tx.ethAmount,
         tokenAmount: tx.tokenAmount,
         tokenPrice: tx.tokenPrice,
         txHash: tx.txHash,

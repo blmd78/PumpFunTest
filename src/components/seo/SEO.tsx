@@ -15,7 +15,7 @@ interface SEOProps {
 
 const SEO: React.FC<SEOProps> = ({ title, description, image, token }) => {
   const router = useRouter();
-  const domain = process.env.NEXT_PUBLIC_DOMAIN || 'https://likeaser.xyz';
+  const domain = process.env.NEXT_PUBLIC_DOMAIN || 'https://likeaser.fun';
 
   const seo = {
     title: token ? `${token.name} (${token.symbol}) - likeaser` : title || 'likeaser - Explore and Trade Tokens',

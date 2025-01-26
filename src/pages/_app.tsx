@@ -1,7 +1,7 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import { WagmiConfig, createConfig, WagmiProvider } from 'wagmi'
-import { rootstockTestnet, shibarium } from 'wagmi/chains'
+import { rootstockTestnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import '@rainbow-me/rainbowkit/styles.css'
