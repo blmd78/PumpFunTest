@@ -24,7 +24,9 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ ...props }) => {
       {/*twitter*/}
       <div
         className="lg:mr-4 mr-auto"
-        onClick={() => window.open("https://x.com/MonarkExchange", "_blank")}
+        onMouseEnter={() => setShowSoon(true)}
+          onMouseLeave={() => setShowSoon(false)}
+        // onClick={() => window.open("https://x.com/MonarkExchange", "_blank")}
       >
         <svg
           width="32"
@@ -46,8 +48,10 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ ...props }) => {
       <div className="relative group lg:mr-4 mr-auto">
         <div
           className="relative inline-block"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={() => setShowSoon(true)}
+          onMouseLeave={() => setShowSoon(false)}
+          // onMouseEnter={handleMouseEnter}
+          // onMouseLeave={handleMouseLeave}
         >
           <svg
             width="32"
@@ -142,7 +146,9 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ ...props }) => {
       {/*whitepaper*/}
       <div
         className=""
-        onClick={() => window.open("https://docs.monark.exchange/", "_blank")}
+        onMouseEnter={() => setShowSoon(true)}
+        onMouseLeave={() => setShowSoon(false)}
+        // onClick={() => window.open("https://docs.monark.exchange/", "_blank")}
       >
         <svg
           width="32"
@@ -174,14 +180,14 @@ const items: {
   {
     label: "",
     items: [
-      {
-        label: "Whitepaper",
-        href: "https://docs.monark.exchange/",
-      },
-      {
-        label: "Github",
-        href: "mailto:monark.exchange@protonmail.com",
-      },
+      // {
+      //   label: "Whitepaper",
+      //   href: "https://docs.monark.exchange/",
+      // },
+      // {
+      //   label: "Github",
+      //   href: "mailto:monark.exchange@protonmail.com",
+      // },
       {
         label: "Support",
         href: "mailto:monark.exchange@protonmail.com",

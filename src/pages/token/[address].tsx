@@ -120,10 +120,10 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
   const [liquidityEvents, setLiquidityEvents] = useState<any>(null);
 
   // Add new state for slippage
-  const [slippage, setSlippage] = useState<string>('0.5');
+  const [slippage, setSlippage] = useState<string>('2.0');
   const [showSlippageSettings, setShowSlippageSettings] = useState(false);
 
-  const commonSlippageValues = ['0.1', '0.5', '1.0'];
+  const commonSlippageValues = ['1.0', '2.0', '3.0'];
 
   // Add handler for slippage change
   const handleSlippageChange = (value: string) => {
@@ -497,6 +497,7 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
                 {showSlippageSettings && (
                   <div className="mt-2 p-3 bg-[#2D2D44] rounded-lg">
                     <div className="flex gap-2 mb-2">
+                      
                       {commonSlippageValues.map((value) => (
                         <button
                           key={value}
@@ -524,6 +525,7 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
                       />
                       <span className="text-xs text-[#B3AEAE]">%</span>
                     </div>
+                    <p className="p-2 text-xs text-[#B3AEAE]">  max 25%</p>
                   </div>
                 )}
               </div>
