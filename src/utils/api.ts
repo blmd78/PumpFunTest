@@ -3,11 +3,15 @@
 import axios from 'axios';
 import { Token, TokenWithLiquidityEvents, PaginatedResponse, LiquidityEvent, TokenWithTransactions, PriceResponse, HistoricalPrice, USDHistoricalPrice, TokenHolder, TransactionResponse } from '@/interface/types';
 import { ethers } from 'ethers';
+import { useChainId } from 'wagmi';
 
 
 const API_BASE_URL = typeof window === 'undefined' ? process.env.NEXT_PUBLIC_API_BASE_URL : '';
+// const SUBGRAPH_URL = typeof window === 'undefined' 
+//   ? process.env.NEXT_PUBLIC_SUBGRAPH_URL || 'http://35.198.140.39:8000/subgraphs/name/likeaser-testnet'
+//   : '/api/subgraph';
 const SUBGRAPH_URL = typeof window === 'undefined' 
-  ? process.env.NEXT_PUBLIC_SUBGRAPH_URL || 'http://35.198.140.39:8000/subgraphs/name/likeaser-testnet'
+  ? process.env.NEXT_PUBLIC_SUBGRAPH_URL || 'https://api.studio.thegraph.com/query/90229/likeaser/version/latest'
   : '/api/subgraph';
 
 export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedResponse<Token>> {
@@ -1003,8 +1007,9 @@ export async function getTokensByCreator(
 //blockexplorer Get token Holders
 export async function getTokenHolders(tokenAddress: string): Promise<TokenHolder[]> {
   try {
+    const blockExplorerUrl = useChainId() === 31 ? 'https://rootstock-testnet.blockscout.com' : 'https://rootstock.blockscout.com';
     const response = await axios.get(
-      `https://rootstock-testnet.blockscout.com/api`, {
+      `${blockExplorerUrl}/api`, {
         params: {
           module: 'token',
           action: 'getTokenHolders',

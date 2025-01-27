@@ -7,7 +7,8 @@ import ERC20ABI from '@/abi/ERC20.json';
 import { useCallback } from 'react';
 import { getTokenPool } from './api';
 
-const BONDING_CURVE_MANAGER_ADDRESS = '0x2a0B34a43b477fA9355AC2c8e54Da3c57067DDF4' as `0x${string}`; // Testnet
+// const BONDING_CURVE_MANAGER_ADDRESS = '0x2a0B34a43b477fA9355AC2c8e54Da3c57067DDF4' as `0x${string}`; // Testnet
+const BONDING_CURVE_MANAGER_ADDRESS = '0xb3E4f5e9755261A779Fd62324fe0CE415B1acD05' as `0x${string}`; // Mainnet
 const CREATION_FEE = parseUnits('0.0002', 18);
 
 export function useCurrentTokenPrice(poolAddress: `0x${string}`) {

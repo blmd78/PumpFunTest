@@ -17,7 +17,8 @@ const nextConfig = {
     return [
       {
         source: '/api/subgraph',
-        destination: 'http://35.198.140.39:8000/subgraphs/name/likeaser-testnet'
+        // destination: 'http://35.198.140.39:8000/subgraphs/name/likeaser-testnet' // Testnet
+        destination: 'https://api.studio.thegraph.com/query/90229/likeaser/version/latest' // Mainnet
       },
       {
         source: '/api/tokens/:path*',
