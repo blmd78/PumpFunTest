@@ -1007,7 +1007,8 @@ export async function getTokensByCreator(
 //blockexplorer Get token Holders
 export async function getTokenHolders(tokenAddress: string): Promise<TokenHolder[]> {
   try {
-    const blockExplorerUrl = useChainId() === 31 ? 'https://rootstock-testnet.blockscout.com' : 'https://rootstock.blockscout.com';
+    // const blockExplorerUrl = 'https://rootstock-testnet.blockscout.com'; // testnet
+    const blockExplorerUrl = 'https://rootstock.blockscout.com'; // mainnet
     const response = await axios.get(
       `${blockExplorerUrl}/api`, {
         params: {
