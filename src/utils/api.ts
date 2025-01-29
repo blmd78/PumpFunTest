@@ -14,9 +14,15 @@ const SUBGRAPH_URL = typeof window === 'undefined'
   ? process.env.NEXT_PUBLIC_SUBGRAPH_URL || 'https://api.studio.thegraph.com/query/90229/likeaser/version/latest'
   : '/api/subgraph';
 
+let requestCounter = 0;
+
 export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedResponse<Token>> {
+  const requestId = ++requestCounter;
+  let time = Date.now();
+  // console.log(`[Request ${requestId}] getAllTokens started at ${time}`);
+
   const skip = (page - 1) * pageSize;
-  console.log("getAllTokens")
+
   const query = `
     query GetAllTokens($first: Int, $skip: Int) {
       tokenCreateds(
@@ -49,7 +55,8 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
     first: pageSize,
     skip: skip
   };
-
+  // console.log("start fetching graphql", Date.now() - time)
+  time = Date.now();
   try {
     // Get blockchain data from subgraph
     const graphqlResponse = await fetch(SUBGRAPH_URL, {
@@ -64,7 +71,8 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
     });
 
     const result = await graphqlResponse.json();
-    console.log("result", result)
+    // console.log(`[Request ${requestId}] GraphQL response after`, Date.now() - time);
+    time = Date.now();
     if (result.errors) {
       console.error('GraphQL errors:', result.errors);
       return {
@@ -80,9 +88,11 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
     const tokens = await Promise.all(result.data.tokenCreateds.map(async (token: any) => {
       try {
         // Fetch metadata for each token
-        const checksumAddress = ethers.utils.getAddress(token.id);
-        const metadataResponse = await fetch(`${API_BASE_URL}/api/tokens/address/${checksumAddress}`);
-        const metadata = await metadataResponse.json();
+        // const checksumAddress = ethers.utils.getAddress(token.id);
+        // const metadataResponse = await fetch(`${API_BASE_URL}/api/tokens/address/${checksumAddress}`);
+        // console.log(`[Request ${requestId}] Database Response`, Date.now() - time)
+        // time = Date.now();
+        // const metadata = await metadataResponse.json();
 
         return {
           id: token.id,
@@ -90,8 +100,8 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
           name: token.name,
           symbol: token.symbol,
           creatorAddress: token.creator.id,
-          logo: metadata.token.logo || '',
-          description: metadata.token.description || '',
+          // logo: metadata.token.logo || '',
+          // description: metadata.token.description || '',
           createdAt: token.blockTimestamp,
           updatedAt: token.blockTimestamp,
           migrated: token.pool.migrated,
@@ -119,7 +129,7 @@ export async function getAllTokens(page = 1, pageSize = 20): Promise<PaginatedRe
         };
       }
     }));
-
+    // console.log(`[Request ${requestId}] Fetch completed`, Date.now() - time);
     return {
       data: tokens,
       totalCount: tokens.length,

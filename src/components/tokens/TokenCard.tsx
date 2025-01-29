@@ -26,6 +26,7 @@ interface TokenCardProps {
 
 const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const tokenRef = useRef(token); // Store mutable version of token
   const router = useRouter();
   const [liquidityPoolAddress, setLiquidityPoolAddress] = useState<`0x${string}` | undefined>();
   const [currentLiquidity, setCurrentLiquidity] = useState<string>("0");
@@ -46,6 +47,25 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
       setCurrentLiquidity(liquidityData[1].toString());
     }
   }, [liquidityData]);
+
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      try {
+        const checksumAddress = ethers.utils.getAddress(tokenAddress);
+        const metadataResponse = await fetch(`/api/tokens/address/${checksumAddress}`);
+        const metadata = await metadataResponse.json();
+        tokenRef.current = {
+          ...tokenRef.current,
+          logo: metadata.token.logo || '',
+          description: metadata.token.description || ''
+        };
+      } catch (error) {
+        console.error('Error fetching token metadata:', error);
+      }
+    };
+
+    fetchMetadata();
+  }, [tokenAddress]);
 
   const isTokenWithLiquidity = (
     token: Token | TokenWithLiquidityEvents
@@ -85,7 +105,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
         <div className="flex items-center gap-4 mb-4">
           <div className="bg-gray-700 rounded-md flex items-center justify-center w-16 h-16">
             <img
-              src={token.logo}
+              src={tokenRef.current.logo || ''}
               alt={`${token.name} Logo`}
               width={64}
               height={64}
@@ -156,7 +176,7 @@ const TokenCard: React.FC<TokenCardProps> = ({ token, isEnded }) => {
         <div className="h-40 sm:h-48 overflow-hidden p-4 flex items-center justify-center">
           <div className="relative w-32 h-32 sm:w-40 sm:h-40">
             <img
-              src={token.logo}
+              src={tokenRef.current.logo || ''}
               alt={token.name}
               className="w-full h-full object-contain"
             />
