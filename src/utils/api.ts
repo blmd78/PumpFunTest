@@ -1,7 +1,7 @@
 // api.ts
 
 import axios from 'axios';
-import { Token, TokenWithLiquidityEvents, PaginatedResponse, LiquidityEvent, TokenWithTransactions, PriceResponse, HistoricalPrice, USDHistoricalPrice, TokenHolder, TransactionResponse } from '@/interface/types';
+import { Token, TokenWithLiquidityEvents, PaginatedResponse, LiquidityEvent, TokenWithTransactions, PriceResponse, HistoricalPrice, USDHistoricalPrice, TokenHolder, TransactionResponse, TokenMetadata } from '@/interface/types';
 import { ethers } from 'ethers';
 import { useChainId } from 'wagmi';
 
@@ -547,7 +547,7 @@ export async function getTokenInfoAndTransactions(
   transactionPageSize: number = 10
 ): Promise<TokenWithTransactions> {
   const skip = (transactionPage - 1) * transactionPageSize;
-  console.log("getTokenInfoAndTransactions")
+  // console.log("getTokenInfoAndTransactions")
   const query = `
     query GetTokenInfoAndTransactions($address: String!, $first: Int!, $skip: Int!) {
       tokenCreated( id: $address ) {
@@ -581,12 +581,11 @@ export async function getTokenInfoAndTransactions(
       }
     }
   `;
-  console.log("start fetching token info and transactions")
   try {
-    const checksumAddress = ethers.utils.getAddress(address);
-    console.log("url", `${API_BASE_URL}/api/tokens/address/${checksumAddress}`)
+    // const checksumAddress = ethers.utils.getAddress(address);
+    // console.log("url", `${API_BASE_URL}/api/tokens/address/${checksumAddress}`)
     // 2. Parallel requests to both APIs
-    const [graphqlResponse, metadataResponse] = await Promise.all([
+    const [graphqlResponse] = await Promise.all([
       // Get blockchain data from subgraph
       fetch(SUBGRAPH_URL, {
         method: 'POST',
@@ -598,18 +597,18 @@ export async function getTokenInfoAndTransactions(
       }),
       
       // Get metadata from your backend
-      fetch(`${API_BASE_URL}/api/tokens/address/${checksumAddress}`)  // Using rewrite to backend
+      // fetch(`${API_BASE_URL}/api/tokens/address/${checksumAddress}`)  // Using rewrite to backend
     ]);
-    console.log("metadataResponse", metadataResponse)
-    const [{ data }, metadata] = await Promise.all([
-      graphqlResponse.json(),
-      metadataResponse.json()
-    ]);
-    console.log("token metadata", metadata)
+    // const [{ data }, metadata] = await Promise.all([
+    //   graphqlResponse.json(),
+    //   metadataResponse.json()
+    // ]);
+    const { data } = await graphqlResponse.json();
+    // const metadata = await metadataResponse.json();
+    // console.log("token metadata", metadata)
     if (!data.tokenCreated) {
       throw new Error('Token not found');
     }
-    console.log("here")
     // 3. Combine the data
     return {
       id: data.tokenCreated.id,
@@ -617,16 +616,23 @@ export async function getTokenInfoAndTransactions(
       name: data.tokenCreated.name,
       symbol: data.tokenCreated.symbol,
       creatorAddress: data.tokenCreated.creator.id, 
-      logo: metadata && metadata.token && metadata.token.logo ? metadata.token.logo : '',        // From backend
-      description: metadata && metadata.token && metadata.token.description ? metadata.token.description : '', // From backend
+      // logo: metadata && metadata.token && metadata.token.logo ? metadata.token.logo : '',        // From backend
+      // description: metadata && metadata.token && metadata.token.description ? metadata.token.description : '', // From backend
+      logo: "",
+      description: "",
       createdAt: data.tokenCreated.blockTimestamp,
       updatedAt: data.tokenCreated.blockTimestamp,
       _count: { liquidityEvents: 0 },
-      youtube: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.youtube ? metadata.token.socialLinks.youtube : "",
-      discord: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.discord ? metadata.token.socialLinks.discord : "",
-      twitter: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.twitter ? metadata.token.socialLinks.twitter : "",
-      website: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.website ? metadata.token.socialLinks.website : "",
-      telegram: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.telegram ? metadata.token.socialLinks.telegram : "",
+      // youtube: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.youtube ? metadata.token.socialLinks.youtube : "",
+      // discord: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.discord ? metadata.token.socialLinks.discord : "",
+      // twitter: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.twitter ? metadata.token.socialLinks.twitter : "",
+      // website: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.website ? metadata.token.socialLinks.website : "",
+      // telegram: metadata && metadata.token && metadata.token.socialLinks && metadata.token.socialLinks.telegram ? metadata.token.socialLinks.telegram : "",
+      youtube: "",
+      discord: "",
+      twitter: "",
+      website: "",
+      telegram: "",
       transactions: {
         data: data.transactions.map((tx: any) => ({
           id: tx.id,
@@ -1093,4 +1099,17 @@ export async function getTokenPool(tokenAddress: string): Promise<string> {
     throw error;
   }
 }
+
+//get token metadata
+export async function getTokenMetadata(address: string): Promise<TokenMetadata> {
+  const checksumAddress = ethers.utils.getAddress(address);
+  const response = await axios.get(`${API_BASE_URL}/api/tokens/address/${checksumAddress}`);
+  const metadata = response.data;
+  return {
+    logo: metadata.token.logo,
+    description: metadata.token.description,
+    socialLinks: metadata.token.socialLinks
+  }
+}
+
 

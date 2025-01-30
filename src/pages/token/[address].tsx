@@ -20,7 +20,7 @@ import {
   useApproveTokens,
   formatAmountV2,
 } from '@/utils/blockchainUtils';
-import { getTokenInfoAndTransactions, getTokenUSDPriceHistory, getTokenHolders, getTokenLiquidityEvents, getTokenPool } from '@/utils/api';
+import { getTokenInfoAndTransactions, getTokenUSDPriceHistory, getTokenHolders, getTokenLiquidityEvents, getTokenPool, getTokenMetadata } from '@/utils/api';
 import { formatTimestamp, formatAmount } from '@/utils/blockchainUtils';
 import { parseUnits, formatUnits } from 'viem';
 import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
@@ -140,16 +140,44 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
     }
   };
 
+  // Add new state for metadata
+  const [metadata, setMetadata] = useState<{
+    logo?: string;
+    description?: string;
+    socialLinks?: {
+      youtube?: string;
+      discord?: string;
+      twitter?: string;
+      website?: string;
+      telegram?: string;
+    }
+  }>({});
+
+  // Separate effect for fetching metadata
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      try {
+        const checksumAddress = address as `0x${string}`;
+        const metadataResponse = await getTokenMetadata(checksumAddress);
+        setMetadata(metadataResponse);
+      } catch (error) {
+        console.error('Error fetching metadata:', error);
+      }
+    };
+
+    if (address) {
+      fetchMetadata();
+    }
+  }, [address]);
+
+  // Original fetchTokenData remains focused on graph data
   const fetchTokenData = useCallback(
     async (page: number) => {
       try {
-        console.log("fetchTokenData")
         const data = await getTokenInfoAndTransactions(address as string, page, 10);
-        console.log("data", data)
         setTokenInfo(data);
         setTransactions(data.transactions.data);
         setTotalTransactionPages(data.transactions.pagination.totalPages);
-        console.log("transactions", transactions)
       } catch (error) {
         console.error('Error fetching token data:', error);
       }
@@ -199,7 +227,6 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
 
   const fetchAllData = useCallback(async () => {
     if (address) {
-      console.log("fetchAllData")
       await fetchTokenData(transactionPage);
       await fetchHistoricalPriceData();
       refetchCurrentPrice();
@@ -313,7 +340,7 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
       ? sellReturnData ? BigInt(Math.floor(Number(sellReturnData) * slippageMultiplier)) : BigInt(0)
       : buyReturnData ? BigInt(Math.floor(Number(buyReturnData) * slippageMultiplier)) : BigInt(0);
 
-    console.log("minReturn", minReturn)
+    // console.log("minReturn", minReturn)
 
     setIsTransacting(true);
 
@@ -377,8 +404,8 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
         token={{
           name: tokenInfo.name,
           symbol: tokenInfo.symbol,
-          description: tokenInfo.description,
-          logo: tokenInfo.logo
+          description: metadata.description || tokenInfo.description,
+          logo: metadata.logo || tokenInfo.logo
         }}
       />
       {/* <div className="w-full min-h-screen bg-gray-900 text-white overflow-x-hidden"> */}
@@ -386,7 +413,7 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row items-center mb-6 gap-4">
-            <Image src={tokenInfo.logo} alt={tokenInfo.name} width={64} height={64} className="rounded-full" />
+            <Image src={metadata.logo || tokenInfo.logo} alt={tokenInfo.name} width={64} height={64} className="rounded-full" />
             <div className="text-center sm:text-left">
               <h1 className="text-2xl sm:text-3xl font-bold text-white">{tokenInfo.name}</h1>
               <p className="text-sm text-[#B3AEAE]">{tokenInfo.symbol}</p>
@@ -426,7 +453,18 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
       </div>
 
           {/* Token Information Section */}
-          <TokenInfo tokenInfo={tokenInfo} />
+          <TokenInfo 
+            tokenInfo={{
+              ...tokenInfo,
+              logo: metadata.logo || tokenInfo.logo,
+              description: metadata.description || tokenInfo.description,
+              youtube: metadata.socialLinks?.youtube || tokenInfo.youtube,
+              discord: metadata.socialLinks?.discord || tokenInfo.discord,
+              twitter: metadata.socialLinks?.twitter || tokenInfo.twitter,
+              website: metadata.socialLinks?.website || tokenInfo.website,
+              telegram: metadata.socialLinks?.telegram || tokenInfo.telegram,
+            }} 
+          />
 
           {/* Price Chart Section */}
           <div className="mb-8">

@@ -213,7 +213,6 @@ const PriceChart: React.FC<PriceChartProps> = ({ data, liquidityEvents, tokenInf
 
 function enhanceSmallCandles(data: ChartDataPoint[]): ChartDataPoint[] {
   const minCandleSize = 1e-9;
-  console.log("enhanceSmallCandles data",data);
   return data.map(item => {
     const bodySize = Math.abs(item.open - item.close);
     if (bodySize < minCandleSize) {

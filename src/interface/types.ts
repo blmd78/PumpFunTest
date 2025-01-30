@@ -93,3 +93,15 @@ export interface TokenHolder {
 export interface TransactionResponse extends Omit<PaginatedResponse<Transaction>, 'data'> {
   transactions: Transaction[];
 }
+
+export interface TokenMetadata {
+  logo?: string;
+    description?: string;
+    socialLinks?: {
+      youtube?: string;
+      discord?: string;
+      twitter?: string;
+      website?: string;
+      telegram?: string;
+    }
+}
