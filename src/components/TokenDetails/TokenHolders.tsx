@@ -37,9 +37,9 @@ const TokenHolders: React.FC<TokenHoldersProps> = ({
             {/* Bonding Curve Manager as the first entry */}
             <tr className="border-b border-[#3F3F5D]">
               <td className="p-2">
-                <div className="text-blue-400">Bonding Curve</div>
+                <div className="">Bonding Curve</div>
               </td>
-              <td className="p-2 text-blue-400">
+              <td className="p-2 ">
                 {formatAmountV3(tokenHolders.find(holder => holder.address === poolAddress)?.balance || '0')}
               </td>
             </tr>
@@ -53,7 +53,7 @@ const TokenHolders: React.FC<TokenHoldersProps> = ({
                       href={`https://www.rootstock.blockscout.com/address/${holder.address}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline"
+                      className=" hover:underline"
                     >
                       Creator <ExternalLinkIcon size={14} className="inline ml-1" />
                     </a>
@@ -62,13 +62,13 @@ const TokenHolders: React.FC<TokenHoldersProps> = ({
                       href={`https://www.rootstock.blockscout.com/address/${holder.address}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline"
+                      className=" hover:underline"
                     >
                       {shortenAddress(holder.address)} <ExternalLinkIcon size={14} className="inline ml-1" />
                     </a>
                   )}
                 </td>
-                <td className="p-2 text-blue-400">{formatAmountV3(holder.balance)}</td>
+                <td className="p-2 ">{formatAmountV3(holder.balance)}</td>
               </tr>
             ))}
           </tbody>
@@ -100,7 +100,7 @@ const TokenHolders: React.FC<TokenHoldersProps> = ({
                     onClick={() => onPageChange(page)}
                     className={`px-2 py-1 text-xs rounded-md transition-colors duration-200 ${
                       currentPage === page
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-[#5252FF] text-white'
                         : 'bg-gray-800 text-gray-400 hover:bg-[#3F3F5D]'
                     }`}
                   >

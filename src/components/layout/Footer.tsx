@@ -199,7 +199,7 @@ const items: {
 const Footer = () => {
   return (
     // <footer className="p-4"></footer>
-    <div className="bg-[#0B0C0F] border-t border-t-[#C26D06] p-8 relative flex justify-center">
+    <div className="bg-[#0B0C0F] border-t-2 border-t-[#C26D06] p-8 relative flex justify-center">
       <div className="flex flex-col w-[1200px]">
         <div className="mb-8">
           <div className="lg:flex lg:justify-between lg:items-center">

@@ -533,7 +533,7 @@ const CreateToken: React.FC = () => {
             onClose={() => {}} // Empty function to prevent closing
           >
             <div className="p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+              <h3 className="text-lg font-medium text-[#C26D06] mb-4">
                 Please Wait
               </h3>
               <p className="text-sm text-gray-500">

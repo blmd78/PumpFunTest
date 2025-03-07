@@ -123,7 +123,7 @@ const TokenTab: React.FC<TokenTabProps> = ({ title, isActive, onClick }) => (
   <button
     className={`w-full rounded-lg py-2.5 text-xs sm:text-sm font-medium leading-5 ${
       isActive
-        ? 'bg-white text-blue-700 shadow'
+        ? 'bg-[#5252FF] text-white shadow'
         : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
     }`}
     onClick={onClick}
@@ -223,14 +223,14 @@ const ProfilePage: React.FC = () => {
         image="seo/profile.jpg"
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-xl sm:text-2xl font-bold text-blue-400 mb-6 neon-text ">
+        <h1 className="text-xl sm:text-2xl font-bold mb-6 ">
           {addressToUse === connectedAddress ? 'Your Profile' : `Profile: ${formatAddressV2(addressToUse)}`}
         </h1>
         
         <div className="mb-8">
-          <div className="flex justify-center mb-4 space-x-1 bg-blue-900/20 rounded-lg p-1">
-            <TokenTab title="Tokens Held" isActive={activeTab === 'held'} onClick={() => setActiveTab('held')} />
+          <div className="flex justify-center mb-4 space-x-1 bg-[#3F3F5D] rounded-lg p-1">
             <TokenTab title="Tokens Created" isActive={activeTab === 'created'} onClick={() => setActiveTab('created')} />
+            <TokenTab title="Tokens Held" isActive={activeTab === 'held'} onClick={() => setActiveTab('held')} />
           </div>
           
           {activeTab === 'held' && (
@@ -292,7 +292,7 @@ const ProfilePage: React.FC = () => {
         </div>
         
         <div>
-          <h2 className="text-lg sm:text-xl font-semibold text-blue-400 mb-4">Recent Transactions</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">Recent Transactions</h2>
           {isLoading ? (
             <p className="text-[#B3AEAE]">Loading transactions...</p>
           ) : transactions && transactions.length > 0 ? (
@@ -321,7 +321,7 @@ const ProfilePage: React.FC = () => {
               </table>
             </div>
           ) : (
-            <p className="text-[#B3AEAE] bg-gray-800 rounded-lg p-4 shadow-md">No recent transactions.</p>
+            <p className="text-[#B3AEAE] bg-[#3F3F5D] rounded-lg p-4 shadow-md">No recent transactions.</p>
           )}
           
           {totalPages > 1 && (

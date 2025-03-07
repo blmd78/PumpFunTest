@@ -259,7 +259,7 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
       setEthBalance(parseFloat(formatUnits(fetchedEthBalance, 18)).toFixed(5));
     }
     if (fetchedTokenBalance) {
-      setTokenBalance(parseFloat(formatUnits(fetchedTokenBalance, 18)).toFixed(5));
+      setTokenBalance(parseFloat(formatUnits(fetchedTokenBalance, 18)).toFixed(12));
     }
   }, [fetchedEthBalance, fetchedTokenBalance]);
 
@@ -425,7 +425,8 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
         <div className="bg-[#3F3F5D] p-4 rounded-lg">
           <h2 className="text-xs sm:text-sm font-semibold mb-2 text-white">Current Price</h2>
           <p className="text-[10px] sm:text-xs text-[#F7931A]">
-            {currentPrice ? Number(formatUnits(currentPrice, 18)).toFixed(18) : 'Loading...'} RBTC
+            {/* {currentPrice ? Number(formatUnits(currentPrice, 18)).toFixed(18) : 'Loading...'} RBTC */}
+            {currentPrice ? `${Number(formatUnits(currentPrice, 18)).toFixed(18)} RBTC` : 'no price available, nobody has bought the token yet'}
           </p>
         </div>
         <div className="bg-[#3F3F5D] p-4 rounded-lg">
@@ -435,9 +436,9 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
           </p>
           {liquidityData && liquidityData[1] && (
             <>
-              <div className="w-full bg-gray-700 rounded-full h-4 mb-2 relative">
+              <div className="w-full bg-[#1B1B28]rounded-full h-4 mb-2 relative">
                 <div 
-                  className="bg-blue-600 h-full rounded-l-full transition-all duration-500 ease-out"
+                  className="bg-[#5252FF] h-full rounded-l-full transition-all duration-500 ease-out"
                   style={{ width: `${calculateProgress(liquidityData[1])}%` }}
                 ></div>
                 <div 
@@ -514,7 +515,7 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
                 <div className="flex items-center bg-[#3F3F5D] border border-white rounded p-2">
                   <input
                     type="text"
-                    value={isCalculating ? 'Calculating...' : toToken.amount ? parseFloat(toToken.amount).toFixed(5) : ''}
+                    value={isCalculating ? 'Calculating...' : toToken.amount ? parseFloat(toToken.amount).toFixed(12) : ''}
                     readOnly
                     className="w-full bg-transparent text-white outline-none text-[10px] sm:text-sm"
                     placeholder="0.00"

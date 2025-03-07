@@ -18,7 +18,7 @@ const PurchaseConfirmationPopup: React.FC<PurchaseConfirmationPopupProps> = ({ o
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-xs sm:max-w-sm relative">
+      <div className="bg-[#F9F9F9] p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-xs sm:max-w-sm relative">
         <button
           onClick={onCancel}
           className="absolute top-2 right-2 text-gray-400 hover:text-white"
@@ -37,13 +37,13 @@ const PurchaseConfirmationPopup: React.FC<PurchaseConfirmationPopupProps> = ({ o
           className="w-full py-2 px-3 bg-gray-700 border border-gray-600 rounded-md text-white mb-3 text-[8px]"
           placeholder={`0.0 (optional)`}
         /> */}
-        <h2 className="text-sm text-center font-bold text-blue-400 mb-2">Confirm Token Creation</h2>
+        <h2 className="text-sm text-center font-bold text-[#5252FF] mb-2">Confirm Token Creation</h2>
         <div className="flex justify-center space-x-3 mb-3">
-          <button onClick={onCancel} className="px-3 py-1.5 bg-gray-600 text-white rounded-md text-xs sm:text-sm">Cancel</button>
-          <button onClick={handleConfirm} className="px-3 py-1.5 bg-blue-500 text-white rounded-md text-xs sm:text-sm">Confirm</button>
+          <button onClick={onCancel} className="px-3 py-1.5 bg-[#6F6B6B] text-white rounded-md text-xs sm:text-sm">Cancel</button>
+          <button onClick={handleConfirm} className="px-3 py-1.5 bg-[#5252FF] text-white rounded-md text-xs sm:text-sm">Confirm</button>
         </div>
         <p className="text-[8px] sm:text-xs text-gray-400 text-center">
-          Cost to deploy: ~0.000015 RBTC
+          Deployment cost: ~0.000015 RBTC
         </p>
       </div>
     </div>

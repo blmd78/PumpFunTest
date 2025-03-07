@@ -50,16 +50,20 @@ const SiweAuth: React.FC<SiweAuthProps> = ({ onAuthSuccess }) => {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        progressClassName: 'bg-[#36A59A]',
+        bodyClassName: 'bg-[#BFE9E5]',
       });
     } catch (error) {
       console.error(error);
-      toast.error('Failed to sign. try again.', {
+      toast.error('Failed to sign. Try again.', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        progressClassName: 'bg-[#F85454]',
+        bodyClassName: 'bg-[#FBCFCF]',
       });
     } finally {
       setLoading(false);

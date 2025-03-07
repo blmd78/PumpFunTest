@@ -46,17 +46,17 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
                   className="border-b border-[#3F3F5D] cursor-pointer sm:cursor-default"
                   onClick={() => toggleRow(tx.id)}
                 >
-                  <td className="p-2 text-blue-400 hidden sm:table-cell">{shortenAddress(tx.senderAddress)}</td>
-                  <td className="p-2 text-blue-400">{tx.type}</td>
-                  <td className="p-2 text-blue-400">{formatAmountV3(tx.ethAmount)}</td>
-                  <td className="p-2 text-blue-400">{formatAmountV3(tx.tokenAmount)}</td>
-                  <td className="p-2 text-blue-400 hidden sm:table-cell">{formatTimestamp(tx.timestamp)}</td>
-                  <td className="p-2 text-blue-400 hidden sm:table-cell">
+                  <td className="p-2  hidden sm:table-cell">{shortenAddress(tx.senderAddress)}</td>
+                    <td className={`p-2 ${tx.type === 'sell' ? 'text-[#F85454]' : 'text-[#36A59A]'}`}>{tx.type}</td>
+                  <td className="p-2 ">{formatAmountV3(tx.ethAmount)}</td>
+                  <td className="p-2 ">{formatAmountV3(tx.tokenAmount)}</td>
+                  <td className="p-2  hidden sm:table-cell">{formatTimestamp(tx.timestamp)}</td>
+                  <td className="p-2  hidden sm:table-cell">
                     <a href={`https://rootstock.blockscout.com/tx/${tx.txHash}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                       {tx.txHash.slice(-8)}
                     </a>
                   </td>
-                  <td className="p-2 text-blue-400 sm:hidden">
+                  <td className="p-2 sm:hidden">
                     <ChevronDownIcon size={16} className={`transition-transform ${expandedRow === tx.id ? 'rotate-180' : ''}`} />
                   </td>
                 </tr>
@@ -109,7 +109,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({
                     onClick={() => handlePageChange(page)}
                     className={`px-2 py-1 text-xs rounded-md transition-colors duration-200 ${
                       transactionPage === page
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-[#5252FF] text-white'
                         : 'bg-gray-800 text-gray-400 hover:bg-[#3F3F5D]'
                     }`}
                   >

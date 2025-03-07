@@ -14,12 +14,20 @@ const HowItWorksPopup: React.FC = () => {
 
   if (!isVisible) return null;
 
+  // const steps = [
+  //   { icon: LightBulbIcon, text: "Pick a coin you like" },
+  //   { icon: CurrencyDollarIcon, text: "Buy on the bonding curve" },
+  //   { icon: ArrowTrendingUpIcon, text: "Sell anytime for profits/losses" },
+  //   { icon: BanknotesIcon, text: "Curve reaches 0.2 RBTC" },
+  //   { icon: FireIcon, text: "RBTC deposited in Monark & burned" },
+  // ];
+
   const steps = [
-    { icon: LightBulbIcon, text: "Pick a coin you like" },
-    { icon: CurrencyDollarIcon, text: "Buy on the bonding curve" },
-    { icon: ArrowTrendingUpIcon, text: "Sell anytime for profits/losses" },
-    { icon: BanknotesIcon, text: "Curve reaches 0.2 RBTC" },
-    { icon: FireIcon, text: "RBTC deposited in Monark & burned" },
+    { icon: LightBulbIcon, text: "Choose a token you like" },
+    { icon: CurrencyDollarIcon, text: "Buy following the bonding curve" },
+    { icon: ArrowTrendingUpIcon, text: "Sell anytime to take profits or cut losses" },
+    { icon: BanknotesIcon, text: "When the curve reaches 0.2 RBTC, funds are transferred to Monark" },
+    { icon: FireIcon, text: "LP is permanently locked, and the token’s journey on likeaser ends" },
   ];
 
   return (
@@ -41,7 +49,7 @@ const HowItWorksPopup: React.FC = () => {
           <div className="space-y-3">
             {steps.map((step, index) => (
               <div key={index} className="flex items-center space-x-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className="flex-shrink-0 w-6 h-6 bg-[#5252FF] rounded-full flex items-center justify-center">
                   <step.icon className="w-3 h-3 text-white" />
                 </div>
                 <p className="text-[#B3AEAE] text-[10px] sm:text-xs flex-grow">{step.text}</p>
