@@ -436,7 +436,7 @@ const TokenDetail: React.FC<TokenDetailProps> = ({ initialTokenInfo }) => {
           </p>
           {liquidityData && liquidityData[1] && (
             <>
-              <div className="w-full bg-[#1B1B28]rounded-full h-4 mb-2 relative">
+              <div className="w-full bg-[#1B1B28] rounded-full h-4 mb-2 relative">
                 <div 
                   className="bg-[#5252FF] h-full rounded-l-full transition-all duration-500 ease-out"
                   style={{ width: `${calculateProgress(liquidityData[1])}%` }}

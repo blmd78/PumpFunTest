@@ -256,10 +256,10 @@ const Home: React.FC = () => {
       />
       <HowItWorksPopup />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="flex items-center space-x-1 text-lg sm:text-sm text-[#F9F9F9] mb-6">
+        <a className="flex items-center space-x-1 text-lg sm:text-sm text-[#F9F9F9] mb-6" href="https://monark.exchange/" target="_blank">
           <span>Powered by</span>
           <img src={monark} alt="Monark" className="h-[1rem] w-[5rem]" />
-        </h1>
+        </a>
 
         <SearchFilter onSearch={handleSearch} />
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">

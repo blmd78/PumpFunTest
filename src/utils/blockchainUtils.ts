@@ -322,7 +322,7 @@ export const formatAmountV2 = (amount: string, decimals: number = 18) => {
   } else if (formattedAmount >= 1e3) {
     return `${(formattedAmount / 1e3).toFixed(2)}k`;
   } else {
-    return formattedAmount.toFixed(3);
+    return formattedAmount.toFixed(9);
   }
 };
 

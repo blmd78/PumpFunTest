@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
-import Link from 'next/link'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { shortenAddress } from '@/utils/blockchainUtils'
-import { useAccount } from 'wagmi'
-const logo = '/logo.png'
+import React, { useState } from "react";
+import Link from "next/link";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { shortenAddress } from "@/utils/blockchainUtils";
+import { useAccount } from "wagmi";
+import { CircleEllipsisIcon } from "lucide-react";
+const logo = "/logo.png";
 
 const CustomConnectButton = () => {
   return (
@@ -17,35 +18,41 @@ const CustomConnectButton = () => {
         openConnectModal,
         mounted,
       }) => {
-        const ready = mounted
-        const connected = ready && account && chain
+        const ready = mounted;
+        const connected = ready && account && chain;
 
         return (
           <div
             {...(!ready && {
-              'aria-hidden': true,
+              "aria-hidden": true,
               style: {
                 opacity: 0,
-                pointerEvents: 'none',
-                userSelect: 'none',
+                pointerEvents: "none",
+                userSelect: "none",
               },
             })}
           >
             {(() => {
               if (!connected) {
                 return (
-                  <button onClick={openConnectModal} className="btn btn-primary text-xs px-2 py-1">
+                  <button
+                    onClick={openConnectModal}
+                    className="btn btn-primary text-xs px-2 py-1"
+                  >
                     Connect wallet
                   </button>
-                )
+                );
               }
 
               if (chain.unsupported) {
                 return (
-                  <button onClick={openChainModal} className="btn btn-secondary text-[10px] sm:text-xs px-2 py-1">
+                  <button
+                    onClick={openChainModal}
+                    className="btn btn-secondary text-[10px] sm:text-xs px-2 py-1"
+                  >
                     Wrong network
                   </button>
-                )
+                );
               }
 
               return (
@@ -53,7 +60,7 @@ const CustomConnectButton = () => {
                   <button
                     onClick={openChainModal}
                     className="btn btn-secondary text-xs px-2 py-1"
-                    style={{ display: 'flex', alignItems: 'center' }}
+                    style={{ display: "flex", alignItems: "center" }}
                   >
                     {chain.hasIcon && (
                       <div
@@ -62,13 +69,13 @@ const CustomConnectButton = () => {
                           width: 12,
                           height: 12,
                           borderRadius: 999,
-                          overflow: 'hidden',
+                          overflow: "hidden",
                           marginRight: 4,
                         }}
                       >
                         {chain.iconUrl && (
                           <img
-                            alt={chain.name ?? 'Chain icon'}
+                            alt={chain.name ?? "Chain icon"}
                             src={chain.iconUrl}
                             style={{ width: 12, height: 12 }}
                           />
@@ -78,42 +85,57 @@ const CustomConnectButton = () => {
                     <span className="text-[10px] sm:text-xs">{chain.name}</span>
                   </button>
 
-                  <button onClick={openAccountModal} className="btn btn-primary text-[10px] sm:text-xs px-2 py-1">
-                  {shortenAddress(account.address)}
-                    {account.displayBalance
-                      ? <span className="hidden sm:inline ml-1">({account.displayBalance})</span>
-                      : ''}
+                  <button
+                    onClick={openAccountModal}
+                    className="btn btn-primary text-[10px] sm:text-xs px-2 py-1"
+                  >
+                    {shortenAddress(account.address)}
+                    {account.displayBalance ? (
+                      <span className="hidden sm:inline ml-1">
+                        ({account.displayBalance})
+                      </span>
+                    ) : (
+                      ""
+                    )}
                   </button>
                 </div>
-              )
+              );
             })()}
           </div>
-        )
+        );
       }}
     </ConnectButton.Custom>
-  )
-}
+  );
+};
 
 const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const { address } = useAccount()
-  const [showPopup, setShowPopup] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const { address } = useAccount();
+  const [showPopup, setShowPopup] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleProfileClick = (e: React.MouseEvent) => {
     if (!address) {
-      e.preventDefault()
-      setShowPopup(true)
-      setTimeout(() => setShowPopup(false), 3000) // Hide popup after 3 seconds
+      e.preventDefault();
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
     }
-  }
+  };
 
   return (
     <nav className="bg-[#0B0C0F] shadow-lg sticky top-0 z-50 border-b-2 border-b-[#C26D06]">
       <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center text-xl font-bold text-blue-400">
-            <img src={logo} alt="likeaser" className="h-[2rem] w-[10rem] mr-2" />
+            <Link
+              href="/"
+              className="flex items-center text-xl font-bold text-blue-400"
+            >
+              <img
+                src={logo}
+                alt="likeaser"
+                className="h-[2rem] w-[10rem] mr-2"
+              />
               {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -135,14 +157,38 @@ const Navbar: React.FC = () => {
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-3">
-          <Link
-              href={address ? `/profile/${address}` : '#'} 
+            <Link
+              href={address ? `/profile/${address}` : "#"}
               className="text-[#B3AEAE] hover:text-white px-2 py-1 rounded-md text-xs"
               onClick={handleProfileClick}
             >
               Profile
             </Link>
-            <Link href="/create" className="text-[#F9F9F9] hover:bg-[#C26D06] hover:border-[#C26D06] px-2 py-1 rounded-md text-xs border border-[#F7931A]">
+            <div
+              className="relative"
+              onMouseEnter={() => setIsDropdownOpen(true)}
+              onMouseLeave={() => setIsDropdownOpen(false)}
+            >
+              <div className="flex items-center">
+                <CircleEllipsisIcon className="text-[#B3AEAE] hover:text-white hover:cursor-pointer px-1 py-1 rounded-md text-xs h-6 w-6" />
+              </div>
+              {isDropdownOpen && (
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 bg-[#0B0C0F] border border-[#C26D06] text-white text-xs rounded-md shadow-lg z-50">
+                  <ul className="">
+                  <li className="px-4 py-2 hover:bg-gray-700 hover:cursor-pointer rounded-md">
+                    <a href="https://likeaser.netlify.app" target="_blank" rel="noopener noreferrer">
+                    Docs
+                    </a>
+                  </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <Link
+              href="/create"
+              className="text-[#F9F9F9] hover:bg-[#C26D06] hover:border-[#C26D06] px-2 py-1 rounded-md text-xs border border-[#F7931A]"
+            >
               Create Token
             </Link>
             <CustomConnectButton />
@@ -164,11 +210,14 @@ const Navbar: React.FC = () => {
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link href="/create" className="text-[#B3AEAE] hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+            <Link
+              href="/create"
+              className="text-[#B3AEAE] hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
               Create Token
             </Link>
-            <Link 
-              href={address ? `/profile/${address}` : '#'}
+            <Link
+              href={address ? `/profile/${address}` : "#"}
               className="text-[#B3AEAE] hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               onClick={handleProfileClick}
             >
@@ -186,7 +235,7 @@ const Navbar: React.FC = () => {
         </div>
       )}
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

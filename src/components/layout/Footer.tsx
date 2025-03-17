@@ -192,6 +192,10 @@ const items: {
         label: "Support",
         href: "mailto:monark.exchange@protonmail.com",
       },
+      {
+        label: "trade on monark",
+        href: "https://monark.exchange/",
+      },
     ],
   },
 ];
@@ -210,10 +214,10 @@ const Footer = () => {
                 className="h-[2rem] w-[10rem] mr-2"
               />
             </div>
-            <div className="flex items-center space-x-1 text-lg sm:text-sm text-[#F9F9F9]">
+            <a className="flex items-center space-x-1 text-lg sm:text-sm text-[#F9F9F9]" href="https://monark.exchange/" target="_blank">
               <span>Powered by</span>
               <img src={monark} alt="Monark" className="h-[1rem] w-[5rem]" />
-            </div>
+            </a>
           </div>
         </div>
 
