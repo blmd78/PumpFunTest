@@ -180,20 +180,24 @@ const items: {
   {
     label: "",
     items: [
-      // {
-      //   label: "Whitepaper",
-      //   href: "https://docs.monark.exchange/",
-      // },
-      // {
-      //   label: "Github",
-      //   href: "mailto:monark.exchange@protonmail.com",
-      // },
+      {
+        label: "trade on MONARK",
+        href: "https://monark.exchange/",
+      },
+      {
+        label: "Whitepaper",
+        href: "https://monark.exchange/",
+      },
       {
         label: "Support",
         href: "mailto:monark.exchange@protonmail.com",
       },
       {
-        label: "trade on monark",
+        label: "Github",
+        href: "https://monark.exchange/",
+      },
+      {
+        label: "How it works",
         href: "https://monark.exchange/",
       },
     ],
